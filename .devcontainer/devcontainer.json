@@ -1,0 +1,38 @@
+{
+  "name": "extended-ceph-exporter",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "containerUser": "dev",
+  "remoteUser": "dev",
+  "updateRemoteUserUID": true,
+  "runArgs": [
+    "--cap-drop=ALL"
+  ],
+  "securityOpt": [
+    "no-new-privileges:true"
+  ],
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {},
+    "ghcr.io/devcontainers/features/node:2": {
+      "version": "lts"
+    },
+    "ghcr.io/devcontainers/features/go:1": {
+      "version": "1.26"
+    },
+    "ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {
+      "minikube": "none"
+    },
+    "ghcr.io/eitsupi/devcontainer-features/jq-likes:2": {
+      "jqVersion": "latest",
+      "yqVersion": "4",
+      "gojqVersion": "none",
+      "xqVersion": "none",
+      "jaqVersion": "none"
+    },
+    "ghcr.io/guiyomh/features/golangci-lint:0": {}
+  },
+  "postCreateCommand": {
+    "dependencies": "go mod download",
+  }
+}

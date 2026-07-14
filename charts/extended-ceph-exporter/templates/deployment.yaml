@@ -1,0 +1,94 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "extended-ceph-exporter.fullname" . }}
+  labels:
+    {{- include "extended-ceph-exporter.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "extended-ceph-exporter.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "extended-ceph-exporter.selectorLabels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: {{ .Values.service.port | quote }}
+        prometheus.io/path: {{ .Values.config.metricsPath | quote }}
+        {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      serviceAccountName: {{ include "extended-ceph-exporter.serviceAccountName" . }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: extended-ceph-exporter
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          env:
+            - name: EXTENDED_CEPH_EXPORTER_LISTEN_ADDRESS
+              value: {{ .Values.config.listenAddress | quote }}
+            - name: EXTENDED_CEPH_EXPORTER_METRICS_PATH
+              value: {{ .Values.config.metricsPath | quote }}
+            - name: EXTENDED_CEPH_EXPORTER_REQUEST_TIMEOUT
+              value: {{ .Values.config.requestTimeout | quote }}
+            - name: EXTENDED_CEPH_EXPORTER_RGW_CACHE_TTL
+              value: {{ .Values.config.rgwCacheTtl | quote }}
+            - name: EXTENDED_CEPH_EXPORTER_SELF_METRICS_ENABLED
+              value: {{ .Values.config.selfMetricsEnabled | quote }}
+            - name: EXTENDED_CEPH_EXPORTER_LOG_LEVEL
+              value: {{ .Values.config.logLevel | quote }}
+            {{- if .Values.rgw.adminEndpoint }}
+            - name: EXTENDED_CEPH_EXPORTER_RGW_ADMIN_ENDPOINT
+              value: {{ .Values.rgw.adminEndpoint | quote }}
+            {{- end }}
+            {{- if or .Values.rgw.credentials.existingSecret.name .Values.rgw.credentials.create .Values.rook.objectStoreUser.enabled }}
+            - name: EXTENDED_CEPH_EXPORTER_RGW_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "extended-ceph-exporter.credentialsSecretName" . }}
+                  key: {{ default .Values.rgw.credentials.accessKeyKey .Values.rgw.credentials.existingSecret.accessKeyKey }}
+            - name: EXTENDED_CEPH_EXPORTER_RGW_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "extended-ceph-exporter.credentialsSecretName" . }}
+                  key: {{ default .Values.rgw.credentials.secretKeyKey .Values.rgw.credentials.existingSecret.secretKeyKey }}
+            {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
