@@ -213,6 +213,6 @@ helm upgrade --install extended-ceph-exporter charts/extended-ceph-exporter \
 
 GitHub Actions release workflow lives in `.github/workflows/release.yaml`.
 
-- Push tag like `0.1.0` to publish multi-arch Docker image to `ghcr.io/florisfeddema/extended-ceph-exporter` with `0.1.0` and `latest` tags.
-- Same workflow packages chart from `charts/extended-ceph-exporter` and publishes it as OCI artifact to `ghcr.io/florisfeddema/charts/extended-ceph-exporter:0.1.0`.
+- Push tag like `0.0.1` to publish multi-arch Docker image to `ghcr.io/florisfeddema/extended-ceph-exporter` with `0.0.1` and `latest` tags.
+- Same workflow packages chart from `charts/extended-ceph-exporter` and publishes it as OCI artifact to `ghcr.io/florisfeddema/charts/extended-ceph-exporter:0.0.1`.
 - Workflow fails if git tag and chart `version` in `Chart.yaml` do not match.
