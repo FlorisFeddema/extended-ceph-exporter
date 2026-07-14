@@ -1,0 +1,10 @@
+.git
+.devcontainer
+.idea
+bin
+dist
+tmp
+*.log
+README.md
+AGENTS.md
+docs

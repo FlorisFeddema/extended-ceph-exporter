@@ -1,0 +1,95 @@
+replicaCount: 1
+
+image:
+  repository: extended-ceph-exporter
+  tag: dev
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext:
+  runAsNonRoot: true
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: true
+
+config:
+  listenAddress: ":9877"
+  metricsPath: "/metrics"
+  requestTimeout: "10s"
+  rgwCacheTtl: "5s"
+  selfMetricsEnabled: false
+  logLevel: info
+
+rgw:
+  adminEndpoint: ""
+  credentials:
+    existingSecret:
+      name: ""
+      accessKeyKey: AccessKey
+      secretKeyKey: SecretKey
+    create: false
+    secretName: ""
+    accessKeyKey: AccessKey
+    secretKeyKey: SecretKey
+    accessKey: ""
+    secretKey: ""
+
+service:
+  type: ClusterIP
+  port: 9877
+  annotations: {}
+  labels: {}
+
+serviceMonitor:
+  enabled: false
+  namespace: ""
+  labels: {}
+  annotations: {}
+  interval: 30s
+  scrapeTimeout: 10s
+  path: /metrics
+  honorLabels: false
+  additionalEndpoints: []
+
+grafanaDashboard:
+  enabled: true
+  labels:
+    grafana_dashboard: "1"
+  annotations: {}
+  datasource:
+    name: "Prometheus"
+    uid: ""
+
+rook:
+  clusterNamespace: rook-ceph
+  objectStoreUser:
+    enabled: false
+    name: ""
+    namespace: ""
+    store: ""
+    displayName: ""
+    secretName: ""
+    quotas: {}
+    capabilities: {}
+    opMask: []
+
+resources: {}
+
+nodeSelector: {}
+tolerations: []
+affinity: {}

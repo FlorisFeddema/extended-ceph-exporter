@@ -1,0 +1,27 @@
+{{- if .Values.rook.objectStoreUser.enabled }}
+apiVersion: ceph.rook.io/v1
+kind: CephObjectStoreUser
+metadata:
+  name: {{ include "extended-ceph-exporter.objectStoreUserName" . }}
+  namespace: {{ include "extended-ceph-exporter.objectStoreUserNamespace" . }}
+  labels:
+    {{- include "extended-ceph-exporter.labels" . | nindent 4 }}
+spec:
+  store: {{ required "rook.objectStoreUser.store is required when rook.objectStoreUser.enabled=true" .Values.rook.objectStoreUser.store | quote }}
+  clusterNamespace: {{ .Values.rook.clusterNamespace | quote }}
+  {{- with .Values.rook.objectStoreUser.displayName }}
+  displayName: {{ . | quote }}
+  {{- end }}
+  {{- with .Values.rook.objectStoreUser.quotas }}
+  quotas:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.rook.objectStoreUser.capabilities }}
+  capabilities:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.rook.objectStoreUser.opMask }}
+  opMask:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+{{- end }}
