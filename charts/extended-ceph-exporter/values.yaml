@@ -68,9 +68,6 @@ grafanaDashboard:
   labels:
     grafana_dashboard: "1"
   annotations: {}
-  datasource:
-    name: "Prometheus"
-    uid: ""
 
 rook:
   clusterNamespace: rook-ceph

@@ -210,12 +210,11 @@ helm upgrade --install extended-ceph-exporter charts/extended-ceph-exporter \
   --set grafanaDashboard.enabled=false
 ```
 
-Override dashboard labels or bind it to a specific Prometheus datasource UID:
+Override dashboard labels:
 
 ```bash
 helm upgrade --install extended-ceph-exporter charts/extended-ceph-exporter \
-  --set grafanaDashboard.labels.grafana_dashboard=1 \
-  --set grafanaDashboard.datasource.uid=prometheus
+  --set grafanaDashboard.labels.grafana_dashboard=1
 ```
 
 ## Release Automation

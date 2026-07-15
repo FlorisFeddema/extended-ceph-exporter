@@ -1,8 +1,3 @@
-{{- $datasourceName := .Values.grafanaDashboard.datasource.name -}}
-{{- $datasource := "{\"type\":\"prometheus\",\"uid\":null}" -}}
-{{- if .Values.grafanaDashboard.datasource.uid -}}
-{{- $datasource = dict "type" "prometheus" "uid" .Values.grafanaDashboard.datasource.uid | toJson -}}
-{{- end -}}
 {
   "annotations": {
     "list": [
@@ -26,7 +21,7 @@
   "links": [],
   "panels": [
     {
-      "datasource": {{ $datasource }},
+      "datasource": {"type":"prometheus","uid":null},
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -83,7 +78,7 @@
       "type": "stat"
     },
     {
-      "datasource": {{ $datasource }},
+      "datasource": {"type":"prometheus","uid":null},
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -140,7 +135,7 @@
       "type": "stat"
     },
     {
-      "datasource": {{ $datasource }},
+      "datasource": {"type":"prometheus","uid":null},
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -197,7 +192,7 @@
       "type": "stat"
     },
     {
-      "datasource": {{ $datasource }},
+      "datasource": {"type":"prometheus","uid":null},
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -254,7 +249,7 @@
       "type": "stat"
     },
     {
-      "datasource": {{ $datasource }},
+      "datasource": {"type":"prometheus","uid":null},
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -337,7 +332,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": {{ $datasource }},
+      "datasource": {"type":"prometheus","uid":null},
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -421,7 +416,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": {{ $datasource }},
+      "datasource": {"type":"prometheus","uid":null},
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -505,7 +500,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": {{ $datasource }},
+      "datasource": {"type":"prometheus","uid":null},
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -569,7 +564,7 @@
       "type": "piechart"
     },
     {
-      "datasource": {{ $datasource }},
+      "datasource": {"type":"prometheus","uid":null},
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -646,7 +641,7 @@
       "type": "stat"
     },
     {
-      "datasource": {{ $datasource }},
+      "datasource": {"type":"prometheus","uid":null},
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -703,7 +698,7 @@
       "type": "stat"
     },
     {
-      "datasource": {{ $datasource }},
+      "datasource": {"type":"prometheus","uid":null},
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -772,23 +767,6 @@
     "list": [
       {
         "current": {
-          "selected": false,
-          "text": {{ $datasourceName | quote }},
-          "value": {{ $datasourceName | quote }}
-        },
-        "hide": 0,
-        "includeAll": false,
-        "label": "Datasource",
-        "multi": false,
-        "name": "datasource",
-        "options": [],
-        "query": "prometheus",
-        "refresh": 1,
-        "regex": "",
-        "type": "datasource"
-      },
-      {
-        "current": {
           "selected": true,
           "text": [
             "All"
@@ -797,7 +775,7 @@
             "$__all"
           ]
         },
-        "datasource": {{ $datasource }},
+        "datasource": {"type":"prometheus","uid":null},
         "definition": "label_values(extended_ceph_rgw_bucket_info, realm)",
         "hide": 0,
         "includeAll": true,
@@ -825,7 +803,7 @@
             "$__all"
           ]
         },
-        "datasource": {{ $datasource }},
+        "datasource": {"type":"prometheus","uid":null},
         "definition": "label_values(extended_ceph_rgw_bucket_info, store)",
         "hide": 0,
         "includeAll": true,
