@@ -159,8 +159,6 @@ Install with an existing secret for RGW credentials:
 
 ```bash
 helm upgrade --install extended-ceph-exporter charts/extended-ceph-exporter \
-  --set image.repository=extended-ceph-exporter \
-  --set image.tag=dev \
   --set rgw.adminEndpoint=https://rgw.example \
   --set rgw.credentials.existingSecret.name=rgw-admin-credentials
 ```
@@ -182,6 +180,17 @@ helm upgrade --install extended-ceph-exporter charts/extended-ceph-exporter \
 ```
 
 The chart supports both an optional `ServiceMonitor` and an optional `CephObjectStoreUser` resource. The exporter configuration is injected through environment variables so access keys and secret keys can be sourced from Kubernetes `Secret` objects without passing them as container arguments.
+
+When the object-store user secret is managed or copied under another name in the exporter namespace, override the reference with `rook.objectStoreUser.secretName`:
+
+```bash
+helm upgrade --install extended-ceph-exporter charts/extended-ceph-exporter \
+  --set rook.objectStoreUser.enabled=true \
+  --set rook.objectStoreUser.store=my-store \
+  --set rook.objectStoreUser.secretName=my-rgw-credentials
+```
+
+If it is not set, the chart uses Rook's generated secret name for the object-store user.
 
 ## Grafana Dashboard
 
