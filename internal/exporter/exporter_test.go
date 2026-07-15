@@ -1,12 +1,14 @@
 package exporter
 
 import (
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
 
 	"github.com/prometheus/client_golang/prometheus"
+	dto "github.com/prometheus/client_model/go"
 
 	"github.com/FlorisFeddema/extended-ceph-exporter/internal/config"
 )
@@ -48,5 +50,45 @@ func TestNewHandlerMetrics(t *testing.T) {
 	body := res.Body.String()
 	if body == "" || !strings.Contains(body, "test_metric") {
 		t.Fatalf("expected metrics output to contain test metric, got %q", body)
+	}
+}
+
+type failingCollector struct{}
+
+func (failingCollector) Describe(ch chan<- *prometheus.Desc) {
+	ch <- prometheus.NewDesc("test_metric", "test help", nil, nil)
+}
+
+func (failingCollector) Collect(ch chan<- prometheus.Metric) {
+	ch <- failingMetric{}
+}
+
+type failingMetric struct{}
+
+func (failingMetric) Desc() *prometheus.Desc {
+	return prometheus.NewDesc("test_metric", "test help", nil, nil)
+}
+
+func (failingMetric) Write(*dto.Metric) error {
+	return errors.New("secret RGW permission error")
+}
+
+func TestNewHandlerHidesMetricsErrors(t *testing.T) {
+	registry := prometheus.NewRegistry()
+	registry.MustRegister(failingCollector{})
+	handler := NewHandler(config.Config{MetricsPath: "/metrics"}, registry)
+
+	req := httptest.NewRequest(http.MethodGet, "/metrics", nil)
+	res := httptest.NewRecorder()
+	handler.ServeHTTP(res, req)
+
+	if res.Code != http.StatusInternalServerError {
+		t.Fatalf("unexpected metrics status: %d", res.Code)
+	}
+	if res.Body.String() != "internal server error\n" {
+		t.Fatalf("unexpected metrics error body: %q", res.Body.String())
+	}
+	if strings.Contains(res.Body.String(), "secret RGW permission error") {
+		t.Fatal("metrics response exposed internal error")
 	}
 }
