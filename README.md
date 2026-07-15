@@ -192,6 +192,30 @@ helm upgrade --install extended-ceph-exporter charts/extended-ceph-exporter \
 
 If it is not set, the chart uses Rook's generated secret name for the object-store user.
 
+### RGW Admin Permissions
+
+The exporter calls the RGW Admin Ops API. Its credential user needs these read-only Admin Ops capabilities:
+
+- `info=read` for RGW site information
+- `users=read` for user details and user quotas
+- `buckets=read` for bucket details, statistics, and bucket listings
+
+Grant them with `radosgw-admin`:
+
+```bash
+radosgw-admin caps add \
+  --uid=extended-ceph-exporter \
+  --caps="info=read;users=read;buckets=read"
+```
+
+Verify the effective capabilities:
+
+```bash
+radosgw-admin user info --uid=extended-ceph-exporter
+```
+
+The `rook.objectStoreUser.capabilities` values configure S3 user capabilities; they do not grant RGW Admin Ops access. Do not use `--admin` or `--system` unless broader access is explicitly required.
+
 ## Grafana Dashboard
 
 The Helm chart now ships an RGW overview dashboard as a `ConfigMap`. By default it is labeled with `grafana_dashboard: "1"` so common Grafana sidecar patterns can discover and import it automatically.
