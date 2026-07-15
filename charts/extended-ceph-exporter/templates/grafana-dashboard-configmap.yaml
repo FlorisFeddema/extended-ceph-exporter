@@ -14,5 +14,5 @@ metadata:
   {{- end }}
 data:
   extended-ceph-exporter-rgw-overview.json: |-
-{{ include "extended-ceph-exporter.grafanaDashboard" . | indent 4 }}
+{{ .Files.Get "dashboards/extended-ceph-exporter-rgw-overview.json" | indent 4 }}
 {{- end }}

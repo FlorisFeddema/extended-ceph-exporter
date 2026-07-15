@@ -1,8 +1,8 @@
 replicaCount: 1
 
 image:
-  repository: extended-ceph-exporter
-  tag: dev
+  repository: ghcr.io/florisfeddema/extended-ceph-exporter
+  tag: ""
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
@@ -13,9 +13,6 @@ serviceAccount:
   create: true
   annotations: {}
   name: ""
-
-podAnnotations: {}
-podLabels: {}
 
 podSecurityContext:
   runAsNonRoot: true
@@ -71,9 +68,6 @@ grafanaDashboard:
   labels:
     grafana_dashboard: "1"
   annotations: {}
-  datasource:
-    name: "Prometheus"
-    uid: ""
 
 rook:
   clusterNamespace: rook-ceph
