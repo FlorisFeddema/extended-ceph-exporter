@@ -6,6 +6,7 @@ metadata:
     {{- include "extended-ceph-exporter.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
+  revisionHistoryLimit: 0
   selector:
     matchLabels:
       {{- include "extended-ceph-exporter.selectorLabels" . | nindent 6 }}
