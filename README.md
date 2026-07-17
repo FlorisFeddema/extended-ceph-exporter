@@ -199,13 +199,16 @@ The exporter calls the RGW Admin Ops API. Its credential user needs these read-o
 - `info=read` for RGW site information
 - `users=read` for user details and user quotas
 - `buckets=read` for bucket details, statistics, and bucket listings
+- `metadata=read` for listing RGW users
+- `usage=read` for statistics on Ceph versions that protect stats separately
+- `zone=read` for RGW zone metadata
 
 Grant them with `radosgw-admin`:
 
 ```bash
 radosgw-admin caps add \
   --uid=extended-ceph-exporter \
-  --caps="info=read;users=read;buckets=read"
+  --caps="info=read;users=read;buckets=read;metadata=read;usage=read;zone=read"
 ```
 
 Verify the effective capabilities:
