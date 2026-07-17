@@ -203,6 +203,9 @@ The exporter calls the RGW Admin Ops API. Its credential user needs these read-o
 - `usage=read` for statistics on Ceph versions that protect stats separately
 - `zone=read` for RGW zone metadata
 
+The chart also sets `opMask` to `read`; write and delete operations are not needed
+for metric collection.
+
 When `rook.objectStoreUser.enabled=true`, the chart includes these capabilities in
 the `CephObjectStoreUser` resource. Rook applies capabilities only when creating
 the user, so delete and recreate the resource after changing them.
