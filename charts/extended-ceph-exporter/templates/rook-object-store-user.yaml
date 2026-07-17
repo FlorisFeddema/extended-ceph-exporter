@@ -12,10 +12,6 @@ spec:
   {{- with .Values.rook.objectStoreUser.displayName }}
   displayName: {{ . | quote }}
   {{- end }}
-  {{- with .Values.rook.objectStoreUser.quotas }}
-  quotas:
-    {{- toYaml . | nindent 4 }}
-  {{- end }}
   {{- with .Values.rook.objectStoreUser.capabilities }}
   capabilities:
     {{- toYaml . | nindent 4 }}

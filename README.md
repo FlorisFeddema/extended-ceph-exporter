@@ -203,7 +203,14 @@ The exporter calls the RGW Admin Ops API. Its credential user needs these read-o
 - `usage=read` for statistics on Ceph versions that protect stats separately
 - `zone=read` for RGW zone metadata
 
-Grant them with `radosgw-admin`:
+The chart also sets `opMask` to `read`; write and delete operations are not needed
+for metric collection.
+
+When `rook.objectStoreUser.enabled=true`, the chart includes these capabilities in
+the `CephObjectStoreUser` resource. Rook applies capabilities only when creating
+the user, so delete and recreate the resource after changing them.
+
+For an existing user, grant them with `radosgw-admin`:
 
 ```bash
 radosgw-admin caps add \
@@ -217,7 +224,9 @@ Verify the effective capabilities:
 radosgw-admin user info --uid=extended-ceph-exporter
 ```
 
-The `rook.objectStoreUser.capabilities` values configure S3 user capabilities; they do not grant RGW Admin Ops access. Do not use `--admin` or `--system` unless broader access is explicitly required.
+Override `rook.objectStoreUser.capabilities` only when the default read-only set
+does not match your deployment. Do not use `--admin` or `--system` unless broader
+access is explicitly required.
 
 ## Grafana Dashboard
 
