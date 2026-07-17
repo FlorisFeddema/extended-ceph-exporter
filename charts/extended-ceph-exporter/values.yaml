@@ -79,7 +79,14 @@ rook:
     displayName: ""
     secretName: ""
     quotas: {}
-    capabilities: {}
+    # Read-only RGW Admin Ops capabilities required by the exporter.
+    capabilities:
+      info: read
+      user: read
+      buckets: read
+      metadata: read
+      usage: read
+      zone: read
     opMask: []
 
 resources: {}
