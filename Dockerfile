@@ -10,9 +10,10 @@ COPY internal ./internal
 
 ARG VERSION=dev
 ARG TARGETOS=linux
-ARG TARGETARCH=amd64
+ARG TARGETARCH
 
-RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} \
+RUN target_arch="${TARGETARCH:-$(go env GOARCH)}" && \
+    CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${target_arch} \
     go build -trimpath -ldflags="-s -w" \
     -o /out/extended-ceph-exporter ./cmd/extended-ceph-exporter
 
@@ -23,4 +24,3 @@ COPY --from=builder /out/extended-ceph-exporter /extended-ceph-exporter
 EXPOSE 9877
 
 ENTRYPOINT ["/extended-ceph-exporter"]
-
