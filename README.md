@@ -232,6 +232,14 @@ access is explicitly required.
 
 The Helm chart now ships an RGW overview dashboard as a `ConfigMap`. By default it is labeled with `grafana_dashboard: "1"` so common Grafana sidecar patterns can discover and import it automatically.
 
+Current dashboard layout focuses on fast RGW triage:
+
+- first-glance stat row (total bucket usage, total objects, bucket count, user count)
+- total bucket size over time graph
+- top-N buckets by size graph controlled by `topBuckets` dashboard variable (options: `5`, `10`, `20`, `50`, `100`; default `10`)
+- full bucket and user tables sorted by size
+- bucket and user quota-max-size tables sorted by value (where quota limit metrics exist)
+
 Render only dashboard manifest:
 
 ```bash
