@@ -235,7 +235,7 @@
       "targets": [
         {
           "expr": "sum(extended_ceph_rgw_bucket_usage_bytes)",
-          "instant": true,
+          "instant": false,
           "legendFormat": "",
           "refId": "A"
         }
@@ -292,7 +292,7 @@
       "targets": [
         {
           "expr": "sum(extended_ceph_rgw_bucket_objects)",
-          "instant": true,
+          "instant": false,
           "legendFormat": "",
           "refId": "A"
         }
@@ -349,7 +349,7 @@
       "targets": [
         {
           "expr": "count(extended_ceph_rgw_bucket_info)",
-          "instant": true,
+          "instant": false,
           "legendFormat": "",
           "refId": "A"
         }
@@ -406,7 +406,7 @@
       "targets": [
         {
           "expr": "count(extended_ceph_rgw_user_info)",
-          "instant": true,
+          "instant": false,
           "legendFormat": "",
           "refId": "A"
         }
@@ -469,7 +469,7 @@
         {
           "expr": "sort_desc(extended_ceph_rgw_bucket_usage_bytes{realm=~\"$realm\",store=~\"$store\"})",
           "format": "table",
-          "instant": true,
+          "instant": false,
           "legendFormat": "",
           "refId": "A"
         }
@@ -532,7 +532,7 @@
         {
           "expr": "sort_desc(extended_ceph_rgw_user_usage_bytes{realm=~\"$realm\",store=~\"$store\"})",
           "format": "table",
-          "instant": true,
+          "instant": false,
           "legendFormat": "",
           "refId": "A"
         }
@@ -595,7 +595,7 @@
         {
           "expr": "sort_desc(extended_ceph_rgw_bucket_quota_max_size_bytes{realm=~\"$realm\",store=~\"$store\"})",
           "format": "table",
-          "instant": true,
+          "instant": false,
           "legendFormat": "",
           "refId": "A"
         }
@@ -658,7 +658,7 @@
         {
           "expr": "sort_desc(extended_ceph_rgw_user_quota_max_size_bytes{realm=~\"$realm\",store=~\"$store\"})",
           "format": "table",
-          "instant": true,
+          "instant": false,
           "legendFormat": "",
           "refId": "A"
         }
@@ -667,7 +667,7 @@
       "type": "table"
     }
   ],
-  "refresh": "30s",
+  "refresh": "",
   "schemaVersion": 39,
   "tags": [
     "ceph",
@@ -782,6 +782,6 @@
   "timezone": "",
   "title": "Extended Ceph Exporter RGW Overview",
   "uid": "extended-ceph-rgw",
-  "version": 4,
+  "version": 6,
   "weekStart": ""
 }
