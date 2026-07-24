@@ -25,172 +25,6 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 20,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 2,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          },
-          "unit": "decbytes"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 10,
-        "w": 12,
-        "x": 0,
-        "y": 8
-      },
-      "id": 9,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": false
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "11.1.0",
-      "targets": [
-        {
-          "expr": "sum(extended_ceph_rgw_bucket_usage_bytes{realm=~\"$realm\",store=~\"$store\"})",
-          "legendFormat": "total",
-          "refId": "A"
-        }
-      ],
-      "title": "Total Bucket Size Over Time",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {"type":"prometheus","uid":null},
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 2,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          },
-          "unit": "decbytes"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 10,
-        "w": 12,
-        "x": 12,
-        "y": 8
-      },
-      "id": 10,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "11.1.0",
-      "targets": [
-        {
-          "expr": "topk($topBuckets, extended_ceph_rgw_bucket_usage_bytes{realm=~\"$realm\",store=~\"$store\"})",
-          "legendFormat": "{{bucket}}",
-          "refId": "A"
-        }
-      ],
-      "title": "Top $topBuckets Buckets by Size",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {"type":"prometheus","uid":null},
-      "fieldConfig": {
-        "defaults": {
-          "color": {
             "mode": "thresholds"
           },
           "mappings": [],
@@ -418,12 +252,40 @@
       "datasource": {"type":"prometheus","uid":null},
       "fieldConfig": {
         "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
           "custom": {
-            "align": "auto",
-            "cellOptions": {
-              "type": "auto"
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 20,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
             },
-            "inspect": false
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
           },
           "mappings": [],
           "thresholds": {
@@ -440,53 +302,73 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 14,
-        "w": 24,
+        "h": 10,
+        "w": 12,
         "x": 0,
-        "y": 18
+        "y": 8
       },
       "id": 5,
       "options": {
-        "cellHeight": "sm",
-        "footer": {
-          "countRows": false,
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
         },
-        "showHeader": true,
-        "sortBy": [
-          {
-            "desc": true,
-            "displayName": "Value"
-          }
-        ]
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
       },
       "pluginVersion": "11.1.0",
       "targets": [
         {
-          "expr": "sort_desc(extended_ceph_rgw_bucket_usage_bytes{realm=~\"$realm\",store=~\"$store\"})",
-          "format": "table",
-          "instant": true,
+          "expr": "sum by (realm) (extended_ceph_rgw_bucket_usage_bytes{realm=~\"$realm\",store=~\"$store\"})",
           "legendFormat": "",
           "refId": "A"
         }
       ],
-      "title": "Buckets by Size (All)",
-      "type": "table"
+      "title": "Bucket Usage by Realm",
+      "type": "timeseries"
     },
     {
       "datasource": {"type":"prometheus","uid":null},
       "fieldConfig": {
         "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
           "custom": {
-            "align": "auto",
-            "cellOptions": {
-              "type": "auto"
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "bars",
+            "fillOpacity": 100,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
             },
-            "inspect": false
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
           },
           "mappings": [],
           "thresholds": {
@@ -498,58 +380,79 @@
               }
             ]
           },
-          "unit": "decbytes"
+          "unit": "short"
         },
         "overrides": []
       },
       "gridPos": {
-        "h": 14,
-        "w": 24,
-        "x": 0,
-        "y": 32
+        "h": 10,
+        "w": 12,
+        "x": 12,
+        "y": 8
       },
       "id": 6,
       "options": {
-        "cellHeight": "sm",
-        "footer": {
-          "countRows": false,
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
         },
-        "showHeader": true,
-        "sortBy": [
-          {
-            "desc": true,
-            "displayName": "Value"
-          }
-        ]
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
       },
       "pluginVersion": "11.1.0",
       "targets": [
         {
-          "expr": "sort_desc(extended_ceph_rgw_user_usage_bytes{realm=~\"$realm\",store=~\"$store\"})",
-          "format": "table",
+          "expr": "topk(10, sum by (bucket) (extended_ceph_rgw_bucket_usage_bytes{realm=~\"$realm\",store=~\"$store\"}))",
           "instant": true,
           "legendFormat": "",
           "refId": "A"
         }
       ],
-      "title": "Users by Size (All)",
-      "type": "table"
+      "title": "Top 10 Buckets by Usage",
+      "type": "timeseries"
     },
     {
       "datasource": {"type":"prometheus","uid":null},
       "fieldConfig": {
         "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
           "custom": {
-            "align": "auto",
-            "cellOptions": {
-              "type": "auto"
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "bars",
+            "fillOpacity": 100,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
             },
-            "inspect": false
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
           },
           "mappings": [],
           "thresholds": {
@@ -566,53 +469,42 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 12,
+        "h": 10,
         "w": 12,
         "x": 0,
-        "y": 46
+        "y": 18
       },
       "id": 7,
       "options": {
-        "cellHeight": "sm",
-        "footer": {
-          "countRows": false,
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
         },
-        "showHeader": true,
-        "sortBy": [
-          {
-            "desc": true,
-            "displayName": "Value"
-          }
-        ]
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
       },
       "pluginVersion": "11.1.0",
       "targets": [
         {
-          "expr": "sort_desc(extended_ceph_rgw_bucket_quota_max_size_bytes{realm=~\"$realm\",store=~\"$store\"})",
-          "format": "table",
+          "expr": "topk(10, sum by (user) (extended_ceph_rgw_user_usage_bytes{realm=~\"$realm\",store=~\"$store\"}))",
           "instant": true,
           "legendFormat": "",
           "refId": "A"
         }
       ],
-      "title": "Bucket Quota Max Size (Enabled)",
-      "type": "table"
+      "title": "Top 10 Users by Usage",
+      "type": "timeseries"
     },
     {
       "datasource": {"type":"prometheus","uid":null},
       "fieldConfig": {
         "defaults": {
-          "custom": {
-            "align": "auto",
-            "cellOptions": {
-              "type": "auto"
-            },
-            "inspect": false
+          "color": {
+            "mode": "palette-classic"
           },
           "mappings": [],
           "thresholds": {
@@ -624,47 +516,243 @@
               }
             ]
           },
-          "unit": "decbytes"
+          "unit": "short"
         },
         "overrides": []
       },
       "gridPos": {
-        "h": 12,
+        "h": 10,
         "w": 12,
         "x": 12,
-        "y": 46
+        "y": 18
       },
       "id": 8,
       "options": {
-        "cellHeight": "sm",
-        "footer": {
-          "countRows": false,
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
+        "displayLabels": [
+          "name",
+          "percent",
+          "value"
+        ],
+        "legend": {
+          "displayMode": "list",
+          "placement": "right",
+          "showLegend": true
         },
-        "showHeader": true,
-        "sortBy": [
-          {
-            "desc": true,
-            "displayName": "Value"
-          }
-        ]
+        "pieType": "pie",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
       },
       "pluginVersion": "11.1.0",
       "targets": [
         {
-          "expr": "sort_desc(extended_ceph_rgw_user_quota_max_size_bytes{realm=~\"$realm\",store=~\"$store\"})",
-          "format": "table",
+          "expr": "count by (tenant) (extended_ceph_rgw_bucket_info{realm=~\"$realm\",store=~\"$store\"})",
           "instant": true,
           "legendFormat": "",
           "refId": "A"
         }
       ],
-      "title": "User Quota Max Size (Enabled)",
-      "type": "table"
+      "title": "Buckets by Tenant",
+      "type": "piechart"
+    },
+    {
+      "datasource": {"type":"prometheus","uid":null},
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "options": {
+                "0": {
+                  "color": "green",
+                  "index": 0,
+                  "text": "No"
+                },
+                "1": {
+                  "color": "red",
+                  "index": 1,
+                  "text": "Yes"
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 28
+      },
+      "id": 9,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.1.0",
+      "targets": [
+        {
+          "expr": "sum(extended_ceph_rgw_user_suspended{realm=~\"$realm\",store=~\"$store\"})",
+          "instant": true,
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "title": "Suspended Users",
+      "type": "stat"
+    },
+    {
+      "datasource": {"type":"prometheus","uid":null},
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 28
+      },
+      "id": 10,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.1.0",
+      "targets": [
+        {
+          "expr": "count(extended_ceph_rgw_bucket_quota_enabled{realm=~\"$realm\",store=~\"$store\"} == 1)",
+          "instant": true,
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "title": "Buckets with Quota",
+      "type": "stat"
+    },
+    {
+      "datasource": {"type":"prometheus","uid":null},
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 28
+      },
+      "id": 11,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.1.0",
+      "targets": [
+        {
+          "expr": "count(extended_ceph_rgw_user_quota_enabled{realm=~\"$realm\",store=~\"$store\"} == 1)",
+          "instant": true,
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "title": "Users with Quota",
+      "type": "stat"
     }
   ],
   "refresh": "30s",
@@ -677,45 +765,6 @@
   ],
   "templating": {
     "list": [
-      {
-        "current": {
-          "selected": true,
-          "text": "10",
-          "value": "10"
-        },
-        "hide": 0,
-        "label": "Top Buckets",
-        "name": "topBuckets",
-        "options": [
-          {
-            "selected": false,
-            "text": "5",
-            "value": "5"
-          },
-          {
-            "selected": true,
-            "text": "10",
-            "value": "10"
-          },
-          {
-            "selected": false,
-            "text": "20",
-            "value": "20"
-          },
-          {
-            "selected": false,
-            "text": "50",
-            "value": "50"
-          },
-          {
-            "selected": false,
-            "text": "100",
-            "value": "100"
-          }
-        ],
-        "query": "5,10,20,50,100",
-        "type": "custom"
-      },
       {
         "current": {
           "selected": true,
@@ -782,6 +831,6 @@
   "timezone": "",
   "title": "Extended Ceph Exporter RGW Overview",
   "uid": "extended-ceph-rgw",
-  "version": 3,
+  "version": 1,
   "weekStart": ""
 }
