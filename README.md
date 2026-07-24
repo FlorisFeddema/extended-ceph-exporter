@@ -1,6 +1,6 @@
 # extended-ceph-exporter
 
-`extended-ceph-exporter` is a Go-based Prometheus exporter that fills in gaps left by the default Ceph exporter shipped with Rook.
+`extended-ceph-exporter` is a Go-based Prometheus exporter that fills in gaps left by the default Ceph exporter shipped with Rook. Primary target environment is Kubernetes, with tight Rook integration and Helm-based deployment.
 
 ## Why This Exists
 
@@ -13,22 +13,6 @@ Later, the scope may expand to other missing Ceph metrics, such as RBD volume si
 
 This project is not a replacement for the existing Ceph exporter. It is an extension that is meant to run alongside the standard exporter and provide additional metrics that are currently missing.
 
-## Project Goals
-
-- Close observability gaps in the default Ceph exporter
-- Stay efficient in CPU and memory usage
-- Fit naturally into a Kubernetes-based Rook deployment
-- Expose Prometheus-compatible metrics without duplicating what the main Ceph exporter already provides
-
-## Target Environment
-
-The primary deployment target is Kubernetes. The exporter is expected to integrate tightly with Rook and be packaged for deployment with Helm.
-
-The project should also include:
-
-- Prometheus Operator integration, including a `ServiceMonitor`
-- One or more Grafana dashboards for the new metrics
-
 ## Implementation Direction
 
 - Built in Golang
@@ -38,18 +22,6 @@ The project should also include:
 - Allowed to use a short-lived cache for slower-moving metrics to reduce load on RGW and Ceph APIs
 
 As the implementation grows, this repository should remain centered on that scope: extend Ceph observability where the default exporter falls short, while staying simple to deploy and efficient to run.
-
-## Initial Roadmap
-
-1. Establish the basic exporter skeleton in Go with Prometheus metric exposition.
-2. Add the first RGW collectors for bucket-level and user-level metrics.
-3. Package the exporter for Kubernetes deployment with a Helm chart.
-4. Add Rook-friendly configuration and service discovery defaults.
-5. Integrate with the Prometheus Operator using a `ServiceMonitor`.
-6. Ship one or more Grafana dashboards for the new metrics.
-7. Evaluate additional gap-filling collectors, such as RBD volume size metrics.
-
-The roadmap should stay incremental: get useful RGW coverage working first, then expand into adjacent missing metrics only where the default exporter still falls short.
 
 ## Architecture Sketch
 
@@ -78,41 +50,6 @@ At a high level, the flow is:
 - A small cache is acceptable when it reduces scrape-time pressure on RGW without making the data meaningfully stale.
 - Keep deployment simple for Rook-managed Kubernetes clusters.
 - Treat Helm, `ServiceMonitor`, and dashboard support as first-class deliverables, not afterthoughts.
-
-## Development Environment
-
-The repository includes a `.devcontainer` setup for a consistent development environment. It installs Go, `kubectl`, Helm, `jq`, `yq`, `golangci-lint`, `curl`, Node.js, and the OpenAI Codex CLI.
-
-The container is configured to run as the non-root `dev` user, sets `no-new-privileges`, and drops all Linux capabilities to reduce the chance of privilege escalation inside the environment. The `dev` user is created at image build time so the devcontainer CLI can attach reliably. The Codex CLI is installed as a pinned version instead of pulling the latest release at container creation time.
-
-To run the development environment:
-
-1. Run `devcontainer up --workspace-folder .` from the repository root.
-2. Start a shell in the container with `devcontainer exec --workspace-folder . zsh`.
-3. Wait for the post-create steps to install dependencies and Codex CLI.
-4. Authenticate Codex inside the container with `codex --login`.
-5. Start working from the repository root inside the container.
-
-Optional environment verification:
-
-```bash
-kubectl version --client
-helm version --short
-jq --version
-yq --version
-golangci-lint version
-curl --version
-node --version
-npm --version
-codex --version
-```
-
-Useful commands:
-
-- `go build ./...`
-- `go test ./...`
-- `golangci-lint run`
-- `codex`
 
 ## Container Image
 
