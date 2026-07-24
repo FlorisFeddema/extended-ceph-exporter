@@ -3,4 +3,4 @@ name: extended-ceph-exporter
 description: Prometheus exporter that extends Ceph and Rook monitoring with additional RGW metrics.
 type: application
 version: 0.0.6
-appVersion: "0.0.6"
+appVersion: "0.0.7"

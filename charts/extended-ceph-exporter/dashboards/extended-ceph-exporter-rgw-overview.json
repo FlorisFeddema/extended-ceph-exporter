@@ -782,6 +782,6 @@
   "timezone": "",
   "title": "Extended Ceph Exporter RGW Overview",
   "uid": "extended-ceph-rgw",
-  "version": 3,
+  "version": 4,
   "weekStart": ""
 }
