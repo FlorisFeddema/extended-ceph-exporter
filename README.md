@@ -1,6 +1,6 @@
 # extended-ceph-exporter
 
-`extended-ceph-exporter` is a Go-based Prometheus exporter that fills in gaps left by the default Ceph exporter shipped with Rook. Primary target environment is Kubernetes, with tight Rook integration and Helm-based deployment.
+`extended-ceph-exporter` is a Go-based Prometheus exporter that fills in gaps left by the default Ceph exporter shipped with Rook. Primary target environment is Kubernetes, with tight Rook integration and Helm-based deployment. Project uses AI-assisted development workflows.
 
 ## Why This Exists
 
