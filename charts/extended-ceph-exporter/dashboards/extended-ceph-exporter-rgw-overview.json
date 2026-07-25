@@ -95,7 +95,7 @@
       "pluginVersion": "11.1.0",
       "targets": [
         {
-          "expr": "sum(extended_ceph_rgw_bucket_usage_bytes{realm=~\"$realm\",store=~\"$store\"})",
+          "expr": "sum(max by (bucket, realm, store, tenant, user) (extended_ceph_rgw_bucket_usage_bytes{realm=~\"$realm\",store=~\"$store\"}))",
           "legendFormat": "total",
           "refId": "A"
         }
@@ -178,7 +178,7 @@
       "pluginVersion": "11.1.0",
       "targets": [
         {
-          "expr": "topk($topBuckets, extended_ceph_rgw_bucket_usage_bytes{realm=~\"$realm\",store=~\"$store\"})",
+          "expr": "topk($topBuckets, max by (bucket, realm, store, tenant, user) (extended_ceph_rgw_bucket_usage_bytes{realm=~\"$realm\",store=~\"$store\"}))",
           "legendFormat": "{{bucket}}",
           "refId": "A"
         }
@@ -234,7 +234,7 @@
       "pluginVersion": "11.1.0",
       "targets": [
         {
-          "expr": "sum(extended_ceph_rgw_bucket_usage_bytes)",
+          "expr": "sum(max by (bucket, realm, store, tenant, user) (extended_ceph_rgw_bucket_usage_bytes))",
           "instant": false,
           "legendFormat": "",
           "refId": "A"
@@ -291,7 +291,7 @@
       "pluginVersion": "11.1.0",
       "targets": [
         {
-          "expr": "sum(extended_ceph_rgw_bucket_objects)",
+          "expr": "sum(max by (bucket, realm, store, tenant, user) (extended_ceph_rgw_bucket_objects))",
           "instant": false,
           "legendFormat": "",
           "refId": "A"
@@ -348,7 +348,7 @@
       "pluginVersion": "11.1.0",
       "targets": [
         {
-          "expr": "count(extended_ceph_rgw_bucket_info)",
+          "expr": "count(max by (bucket, realm, store, tenant, user) (extended_ceph_rgw_bucket_info))",
           "instant": false,
           "legendFormat": "",
           "refId": "A"
@@ -405,7 +405,7 @@
       "pluginVersion": "11.1.0",
       "targets": [
         {
-          "expr": "count(extended_ceph_rgw_user_info)",
+          "expr": "count(max by (realm, store, tenant, user) (extended_ceph_rgw_user_info))",
           "instant": false,
           "legendFormat": "",
           "refId": "A"
@@ -460,18 +460,40 @@
         "sortBy": [
           {
             "desc": true,
-            "displayName": "Value"
+            "displayName": "Usage Bytes"
           }
         ]
       },
       "pluginVersion": "11.1.0",
       "targets": [
         {
-          "expr": "sort_desc(extended_ceph_rgw_bucket_usage_bytes{realm=~\"$realm\",store=~\"$store\"})",
+          "expr": "sort_desc(max by (bucket, realm, store, tenant, user) (extended_ceph_rgw_bucket_usage_bytes{realm=~\"$realm\",store=~\"$store\"}))",
           "format": "table",
           "instant": false,
           "legendFormat": "",
           "refId": "A"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "__name__": true
+            },
+            "indexByName": {
+              "bucket": 0,
+              "tenant": 1,
+              "user": 2,
+              "realm": 3,
+              "store": 4,
+              "Value": 5
+            },
+            "renameByName": {
+              "Value": "Usage Bytes"
+            }
+          }
         }
       ],
       "title": "Buckets by Size (All)",
@@ -523,18 +545,39 @@
         "sortBy": [
           {
             "desc": true,
-            "displayName": "Value"
+            "displayName": "Usage Bytes"
           }
         ]
       },
       "pluginVersion": "11.1.0",
       "targets": [
         {
-          "expr": "sort_desc(extended_ceph_rgw_user_usage_bytes{realm=~\"$realm\",store=~\"$store\"})",
+          "expr": "sort_desc(max by (realm, store, tenant, user) (extended_ceph_rgw_user_usage_bytes{realm=~\"$realm\",store=~\"$store\"}))",
           "format": "table",
           "instant": false,
           "legendFormat": "",
           "refId": "A"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "__name__": true
+            },
+            "indexByName": {
+              "user": 0,
+              "tenant": 1,
+              "realm": 2,
+              "store": 3,
+              "Value": 4
+            },
+            "renameByName": {
+              "Value": "Usage Bytes"
+            }
+          }
         }
       ],
       "title": "Users by Size (All)",
@@ -586,18 +629,40 @@
         "sortBy": [
           {
             "desc": true,
-            "displayName": "Value"
+            "displayName": "Quota Max Size Bytes"
           }
         ]
       },
       "pluginVersion": "11.1.0",
       "targets": [
         {
-          "expr": "sort_desc(extended_ceph_rgw_bucket_quota_max_size_bytes{realm=~\"$realm\",store=~\"$store\"})",
+          "expr": "sort_desc(max by (bucket, realm, store, tenant, user) (extended_ceph_rgw_bucket_quota_max_size_bytes{realm=~\"$realm\",store=~\"$store\"}))",
           "format": "table",
           "instant": false,
           "legendFormat": "",
           "refId": "A"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "__name__": true
+            },
+            "indexByName": {
+              "bucket": 0,
+              "tenant": 1,
+              "user": 2,
+              "realm": 3,
+              "store": 4,
+              "Value": 5
+            },
+            "renameByName": {
+              "Value": "Quota Max Size Bytes"
+            }
+          }
         }
       ],
       "title": "Bucket Quota Max Size (Enabled)",
@@ -649,18 +714,39 @@
         "sortBy": [
           {
             "desc": true,
-            "displayName": "Value"
+            "displayName": "Quota Max Size Bytes"
           }
         ]
       },
       "pluginVersion": "11.1.0",
       "targets": [
         {
-          "expr": "sort_desc(extended_ceph_rgw_user_quota_max_size_bytes{realm=~\"$realm\",store=~\"$store\"})",
+          "expr": "sort_desc(max by (realm, store, tenant, user) (extended_ceph_rgw_user_quota_max_size_bytes{realm=~\"$realm\",store=~\"$store\"}))",
           "format": "table",
           "instant": false,
           "legendFormat": "",
           "refId": "A"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "__name__": true
+            },
+            "indexByName": {
+              "user": 0,
+              "tenant": 1,
+              "realm": 2,
+              "store": 3,
+              "Value": 4
+            },
+            "renameByName": {
+              "Value": "Quota Max Size Bytes"
+            }
+          }
         }
       ],
       "title": "User Quota Max Size (Enabled)",
@@ -782,6 +868,6 @@
   "timezone": "",
   "title": "Extended Ceph Exporter RGW Overview",
   "uid": "extended-ceph-rgw",
-  "version": 6,
+  "version": 8,
   "weekStart": ""
 }
