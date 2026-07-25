@@ -467,14 +467,25 @@
       "pluginVersion": "11.1.0",
       "targets": [
         {
-          "expr": "sort_desc(max by (bucket, realm, store, tenant, user) (extended_ceph_rgw_bucket_usage_bytes{realm=~\"$realm\",store=~\"$store\"}))",
+          "expr": "sort_desc(max by (bucket, tenant) (last_over_time(extended_ceph_rgw_bucket_usage_bytes{realm=~\"$realm\",store=~\"$store\"}[$__range])))",
           "format": "table",
-          "instant": false,
+          "instant": true,
           "legendFormat": "",
           "refId": "A"
+        },
+        {
+          "expr": "max by (bucket, tenant) (last_over_time(extended_ceph_rgw_bucket_objects{realm=~\"$realm\",store=~\"$store\"}[$__range]))",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "",
+          "refId": "B"
         }
       ],
       "transformations": [
+        {
+          "id": "merge",
+          "options": {}
+        },
         {
           "id": "organize",
           "options": {
@@ -485,13 +496,14 @@
             "indexByName": {
               "bucket": 0,
               "tenant": 1,
-              "user": 2,
-              "realm": 3,
-              "store": 4,
-              "Value": 5
+              "Usage Bytes": 2,
+              "Object Count": 3
             },
             "renameByName": {
-              "Value": "Usage Bytes"
+              "Value": "Usage Bytes",
+              "Value 1": "Object Count",
+              "Value #A": "Usage Bytes",
+              "Value #B": "Object Count"
             }
           }
         }
@@ -868,6 +880,6 @@
   "timezone": "",
   "title": "Extended Ceph Exporter RGW Overview",
   "uid": "extended-ceph-rgw",
-  "version": 8,
+  "version": 9,
   "weekStart": ""
 }
