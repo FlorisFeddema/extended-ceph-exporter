@@ -22,7 +22,7 @@ func TestBoolFloat(t *testing.T) {
 func TestBucketsCollectorCollectsMetrics(t *testing.T) {
 	service := NewService(
 		StaticBucketSource{Buckets: []Bucket{{
-			Zonegroup:             "realm-a",
+			Zonegroup:         "realm-a",
 			Store:             "store-a",
 			Bucket:            "bucket-a",
 			User:              "user-a",
@@ -71,7 +71,7 @@ func TestUsersCollectorCollectsMetrics(t *testing.T) {
 	service := NewService(
 		StaticBucketSource{},
 		StaticUserSource{Users: []User{{
-			Zonegroup:             "realm-a",
+			Zonegroup:         "realm-a",
 			Store:             "store-a",
 			User:              "user-a",
 			Tenant:            "tenant-a",
@@ -129,7 +129,7 @@ extended_ceph_rgw_user_usage_bytes{store="store-a",tenant="tenant-a",user="user-
 func TestCollectorsOmitUnlimitedQuotaMetrics(t *testing.T) {
 	service := NewService(
 		StaticBucketSource{Buckets: []Bucket{{
-			Zonegroup:        "realm-a",
+			Zonegroup:    "realm-a",
 			Store:        "store-a",
 			Bucket:       "bucket-a",
 			User:         "user-a",
@@ -137,7 +137,7 @@ func TestCollectorsOmitUnlimitedQuotaMetrics(t *testing.T) {
 			QuotaEnabled: new(true),
 		}}},
 		StaticUserSource{Users: []User{{
-			Zonegroup:        "realm-a",
+			Zonegroup:    "realm-a",
 			Store:        "store-a",
 			User:         "user-a",
 			Tenant:       "tenant-a",
@@ -180,17 +180,17 @@ func TestCollectorsOmitUnlimitedQuotaMetrics(t *testing.T) {
 func TestCollectorsOmitUnknownQuotaMetrics(t *testing.T) {
 	service := NewService(
 		StaticBucketSource{Buckets: []Bucket{{
-			Zonegroup:  "realm-a",
-			Store:  "store-a",
-			Bucket: "bucket-a",
-			User:   "user-a",
-			Tenant: "tenant-a",
+			Zonegroup: "realm-a",
+			Store:     "store-a",
+			Bucket:    "bucket-a",
+			User:      "user-a",
+			Tenant:    "tenant-a",
 		}}},
 		StaticUserSource{Users: []User{{
-			Zonegroup:  "realm-a",
-			Store:  "store-a",
-			User:   "user-a",
-			Tenant: "tenant-a",
+			Zonegroup: "realm-a",
+			Store:     "store-a",
+			User:      "user-a",
+			Tenant:    "tenant-a",
 		}}},
 		time.Minute,
 	)
