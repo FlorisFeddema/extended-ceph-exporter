@@ -6,10 +6,9 @@ linters:
     - govet
     - staticcheck
     - unused
-
-issues:
-  exclude-rules:
-    # Test helpers and table-driven tests routinely shadow err.
-    - path: "_test\\.go"
-      linters:
-        - errcheck
+  exclusions:
+    rules:
+      # Test helpers and table-driven tests routinely shadow err.
+      - path: "_test\\.go"
+        linters:
+          - errcheck
