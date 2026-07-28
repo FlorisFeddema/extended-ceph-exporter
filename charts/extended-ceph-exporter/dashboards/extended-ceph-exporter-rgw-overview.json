@@ -437,7 +437,24 @@
           },
           "unit": "decbytes"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Object Count"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "none"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 14,
@@ -508,7 +525,7 @@
           }
         }
       ],
-      "title": "Buckets by Size (All)",
+      "title": "Buckets by Size",
       "type": "table"
     },
     {
@@ -564,9 +581,9 @@
       "pluginVersion": "11.1.0",
       "targets": [
         {
-          "expr": "sort_desc(max by (realm, store, tenant, user) (extended_ceph_rgw_user_usage_bytes{realm=~\"$realm\",store=~\"$store\"}))",
+          "expr": "sort_desc(max by (tenant, user) (last_over_time(extended_ceph_rgw_user_usage_bytes{realm=~\"$realm\",store=~\"$store\"}[$__range])))",
           "format": "table",
-          "instant": false,
+          "instant": true,
           "legendFormat": "",
           "refId": "A"
         }
@@ -582,17 +599,16 @@
             "indexByName": {
               "user": 0,
               "tenant": 1,
-              "realm": 2,
-              "store": 3,
-              "Value": 4
+              "Value": 2
             },
             "renameByName": {
-              "Value": "Usage Bytes"
+              "Value": "Usage Bytes",
+              "Value #A": "Usage Bytes"
             }
           }
         }
       ],
-      "title": "Users by Size (All)",
+      "title": "Users by Size",
       "type": "table"
     },
     {
@@ -677,7 +693,7 @@
           }
         }
       ],
-      "title": "Bucket Quota Max Size (Enabled)",
+      "title": "Bucket Quota Max Size",
       "type": "table"
     },
     {
@@ -761,7 +777,7 @@
           }
         }
       ],
-      "title": "User Quota Max Size (Enabled)",
+      "title": "User Quota Max Size",
       "type": "table"
     }
   ],
@@ -778,8 +794,8 @@
       {
         "current": {
           "selected": true,
-          "text": "10",
-          "value": "10"
+          "text": "20",
+          "value": "20"
         },
         "hide": 0,
         "label": "Top Buckets",
@@ -791,12 +807,12 @@
             "value": "5"
           },
           {
-            "selected": true,
+            "selected": false,
             "text": "10",
             "value": "10"
           },
           {
-            "selected": false,
+            "selected": true,
             "text": "20",
             "value": "20"
           },
@@ -873,13 +889,13 @@
     ]
   },
   "time": {
-    "from": "now-6h",
+    "from": "now-24h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Extended Ceph Exporter RGW Overview",
   "uid": "extended-ceph-rgw",
-  "version": 9,
+  "version": 10,
   "weekStart": ""
 }
