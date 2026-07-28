@@ -30,12 +30,12 @@ func (s BucketSource) ListBuckets(ctx context.Context) ([]rgw.Bucket, error) {
 		quotaEnabled := (*bool)(nil)
 		quotaMaxSizeBytes := (*float64)(nil)
 		quotaMaxObjects := (*float64)(nil)
-		realm := zonegroupRealm(bucket.Zonegroup)
+		zonegroup := toZonegroup(bucket.Zonegroup)
 		user := bucket.Owner
 		tenant := bucket.Tenant
 
 		if err == nil {
-			realm = zonegroupRealm(firstNonEmpty(bucketInfo.Zonegroup, bucket.Zonegroup))
+			zonegroup = toZonegroup(firstNonEmpty(bucketInfo.Zonegroup, bucket.Zonegroup))
 			user = firstNonEmpty(bucketInfo.Owner, bucket.Owner)
 			tenant = firstNonEmpty(bucketInfo.Tenant, bucket.Tenant)
 			quotaEnabled = bucketInfo.BucketQuota.Enabled
@@ -44,7 +44,7 @@ func (s BucketSource) ListBuckets(ctx context.Context) ([]rgw.Bucket, error) {
 		}
 
 		result = append(result, rgw.Bucket{
-			Realm:             realm,
+			Zonegroup:         zonegroup,
 			Store:             store,
 			Bucket:            bucket.Bucket,
 			User:              user,
@@ -60,7 +60,7 @@ func (s BucketSource) ListBuckets(ctx context.Context) ([]rgw.Bucket, error) {
 	return result, nil
 }
 
-func zonegroupRealm(zonegroup string) string {
+func toZonegroup(zonegroup string) string {
 	if zonegroup == "" {
 		return unknownLabelValue
 	}

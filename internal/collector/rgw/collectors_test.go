@@ -13,10 +13,6 @@ func float64Ref(value float64) *float64 {
 	return &value
 }
 
-func boolRef(value bool) *bool {
-	return &value
-}
-
 func TestBoolFloat(t *testing.T) {
 	if boolFloat(true) != 1 || boolFloat(false) != 0 {
 		t.Fatal("boolFloat returned unexpected values")
@@ -26,14 +22,14 @@ func TestBoolFloat(t *testing.T) {
 func TestBucketsCollectorCollectsMetrics(t *testing.T) {
 	service := NewService(
 		StaticBucketSource{Buckets: []Bucket{{
-			Realm:             "realm-a",
+			Zonegroup:             "realm-a",
 			Store:             "store-a",
 			Bucket:            "bucket-a",
 			User:              "user-a",
 			Tenant:            "tenant-a",
 			UsageBytes:        10,
 			Objects:           4,
-			QuotaEnabled:      boolRef(true),
+			QuotaEnabled:      new(true),
 			QuotaMaxSizeBytes: float64Ref(20),
 			QuotaMaxObjects:   float64Ref(30),
 		}}},
@@ -48,22 +44,22 @@ func TestBucketsCollectorCollectsMetrics(t *testing.T) {
 	expected := `
 # HELP extended_ceph_rgw_bucket_info Static presence metric for an RGW bucket.
 # TYPE extended_ceph_rgw_bucket_info gauge
-extended_ceph_rgw_bucket_info{bucket="bucket-a",realm="realm-a",store="store-a",tenant="tenant-a",user="user-a"} 1
+extended_ceph_rgw_bucket_info{bucket="bucket-a",store="store-a",tenant="tenant-a",user="user-a",zonegroup="realm-a"} 1
 # HELP extended_ceph_rgw_bucket_objects Current object count for an RGW bucket.
 # TYPE extended_ceph_rgw_bucket_objects gauge
-extended_ceph_rgw_bucket_objects{bucket="bucket-a",realm="realm-a",store="store-a",tenant="tenant-a",user="user-a"} 4
+extended_ceph_rgw_bucket_objects{bucket="bucket-a",store="store-a",tenant="tenant-a",user="user-a",zonegroup="realm-a"} 4
 # HELP extended_ceph_rgw_bucket_quota_enabled Whether the RGW bucket quota is enabled.
 # TYPE extended_ceph_rgw_bucket_quota_enabled gauge
-extended_ceph_rgw_bucket_quota_enabled{bucket="bucket-a",realm="realm-a",store="store-a",tenant="tenant-a",user="user-a"} 1
+extended_ceph_rgw_bucket_quota_enabled{bucket="bucket-a",store="store-a",tenant="tenant-a",user="user-a",zonegroup="realm-a"} 1
 # HELP extended_ceph_rgw_bucket_quota_max_objects Configured maximum RGW bucket quota object count.
 # TYPE extended_ceph_rgw_bucket_quota_max_objects gauge
-extended_ceph_rgw_bucket_quota_max_objects{bucket="bucket-a",realm="realm-a",store="store-a",tenant="tenant-a",user="user-a"} 30
+extended_ceph_rgw_bucket_quota_max_objects{bucket="bucket-a",store="store-a",tenant="tenant-a",user="user-a",zonegroup="realm-a"} 30
 # HELP extended_ceph_rgw_bucket_quota_max_size_bytes Configured maximum RGW bucket quota size in bytes.
 # TYPE extended_ceph_rgw_bucket_quota_max_size_bytes gauge
-extended_ceph_rgw_bucket_quota_max_size_bytes{bucket="bucket-a",realm="realm-a",store="store-a",tenant="tenant-a",user="user-a"} 20
+extended_ceph_rgw_bucket_quota_max_size_bytes{bucket="bucket-a",store="store-a",tenant="tenant-a",user="user-a",zonegroup="realm-a"} 20
 # HELP extended_ceph_rgw_bucket_usage_bytes Current RGW bucket size in bytes.
 # TYPE extended_ceph_rgw_bucket_usage_bytes gauge
-extended_ceph_rgw_bucket_usage_bytes{bucket="bucket-a",realm="realm-a",store="store-a",tenant="tenant-a",user="user-a"} 10
+extended_ceph_rgw_bucket_usage_bytes{bucket="bucket-a",store="store-a",tenant="tenant-a",user="user-a",zonegroup="realm-a"} 10
 `
 
 	if err := testutil.GatherAndCompare(registry, strings.NewReader(expected)); err != nil {
@@ -75,14 +71,14 @@ func TestUsersCollectorCollectsMetrics(t *testing.T) {
 	service := NewService(
 		StaticBucketSource{},
 		StaticUserSource{Users: []User{{
-			Realm:             "realm-a",
+			Zonegroup:             "realm-a",
 			Store:             "store-a",
 			User:              "user-a",
 			Tenant:            "tenant-a",
 			UsageBytes:        10,
 			Objects:           4,
 			BucketCount:       2,
-			QuotaEnabled:      boolRef(true),
+			QuotaEnabled:      new(true),
 			QuotaMaxSizeBytes: float64Ref(20),
 			QuotaMaxObjects:   float64Ref(30),
 			Suspended:         true,
@@ -98,31 +94,31 @@ func TestUsersCollectorCollectsMetrics(t *testing.T) {
 	expected := `
 # HELP extended_ceph_rgw_user_bucket_count Number of buckets owned by an RGW user.
 # TYPE extended_ceph_rgw_user_bucket_count gauge
-extended_ceph_rgw_user_bucket_count{realm="realm-a",store="store-a",tenant="tenant-a",user="user-a"} 2
+extended_ceph_rgw_user_bucket_count{store="store-a",tenant="tenant-a",user="user-a",zonegroup="realm-a"} 2
 # HELP extended_ceph_rgw_user_info Static presence metric for an RGW user.
 # TYPE extended_ceph_rgw_user_info gauge
-extended_ceph_rgw_user_info{realm="realm-a",store="store-a",tenant="tenant-a",user="user-a"} 1
+extended_ceph_rgw_user_info{store="store-a",tenant="tenant-a",user="user-a",zonegroup="realm-a"} 1
 # HELP extended_ceph_rgw_user_max_buckets Configured maximum number of buckets for an RGW user.
 # TYPE extended_ceph_rgw_user_max_buckets gauge
-extended_ceph_rgw_user_max_buckets{realm="realm-a",store="store-a",tenant="tenant-a",user="user-a"} 50
+extended_ceph_rgw_user_max_buckets{store="store-a",tenant="tenant-a",user="user-a",zonegroup="realm-a"} 50
 # HELP extended_ceph_rgw_user_objects Total objects across buckets owned by an RGW user.
 # TYPE extended_ceph_rgw_user_objects gauge
-extended_ceph_rgw_user_objects{realm="realm-a",store="store-a",tenant="tenant-a",user="user-a"} 4
+extended_ceph_rgw_user_objects{store="store-a",tenant="tenant-a",user="user-a",zonegroup="realm-a"} 4
 # HELP extended_ceph_rgw_user_quota_enabled Whether the RGW user quota is enabled.
 # TYPE extended_ceph_rgw_user_quota_enabled gauge
-extended_ceph_rgw_user_quota_enabled{realm="realm-a",store="store-a",tenant="tenant-a",user="user-a"} 1
+extended_ceph_rgw_user_quota_enabled{store="store-a",tenant="tenant-a",user="user-a",zonegroup="realm-a"} 1
 # HELP extended_ceph_rgw_user_quota_max_objects Configured maximum RGW user quota object count.
 # TYPE extended_ceph_rgw_user_quota_max_objects gauge
-extended_ceph_rgw_user_quota_max_objects{realm="realm-a",store="store-a",tenant="tenant-a",user="user-a"} 30
+extended_ceph_rgw_user_quota_max_objects{store="store-a",tenant="tenant-a",user="user-a",zonegroup="realm-a"} 30
 # HELP extended_ceph_rgw_user_quota_max_size_bytes Configured maximum RGW user quota size in bytes.
 # TYPE extended_ceph_rgw_user_quota_max_size_bytes gauge
-extended_ceph_rgw_user_quota_max_size_bytes{realm="realm-a",store="store-a",tenant="tenant-a",user="user-a"} 20
+extended_ceph_rgw_user_quota_max_size_bytes{store="store-a",tenant="tenant-a",user="user-a",zonegroup="realm-a"} 20
 # HELP extended_ceph_rgw_user_suspended Whether the RGW user is suspended.
 # TYPE extended_ceph_rgw_user_suspended gauge
-extended_ceph_rgw_user_suspended{realm="realm-a",store="store-a",tenant="tenant-a",user="user-a"} 1
+extended_ceph_rgw_user_suspended{store="store-a",tenant="tenant-a",user="user-a",zonegroup="realm-a"} 1
 # HELP extended_ceph_rgw_user_usage_bytes Total bytes used across buckets owned by an RGW user.
 # TYPE extended_ceph_rgw_user_usage_bytes gauge
-extended_ceph_rgw_user_usage_bytes{realm="realm-a",store="store-a",tenant="tenant-a",user="user-a"} 10
+extended_ceph_rgw_user_usage_bytes{store="store-a",tenant="tenant-a",user="user-a",zonegroup="realm-a"} 10
 `
 
 	if err := testutil.GatherAndCompare(registry, strings.NewReader(expected)); err != nil {
@@ -133,19 +129,19 @@ extended_ceph_rgw_user_usage_bytes{realm="realm-a",store="store-a",tenant="tenan
 func TestCollectorsOmitUnlimitedQuotaMetrics(t *testing.T) {
 	service := NewService(
 		StaticBucketSource{Buckets: []Bucket{{
-			Realm:        "realm-a",
+			Zonegroup:        "realm-a",
 			Store:        "store-a",
 			Bucket:       "bucket-a",
 			User:         "user-a",
 			Tenant:       "tenant-a",
-			QuotaEnabled: boolRef(true),
+			QuotaEnabled: new(true),
 		}}},
 		StaticUserSource{Users: []User{{
-			Realm:        "realm-a",
+			Zonegroup:        "realm-a",
 			Store:        "store-a",
 			User:         "user-a",
 			Tenant:       "tenant-a",
-			QuotaEnabled: boolRef(true),
+			QuotaEnabled: new(true),
 		}}},
 		time.Minute,
 	)
@@ -184,14 +180,14 @@ func TestCollectorsOmitUnlimitedQuotaMetrics(t *testing.T) {
 func TestCollectorsOmitUnknownQuotaMetrics(t *testing.T) {
 	service := NewService(
 		StaticBucketSource{Buckets: []Bucket{{
-			Realm:  "realm-a",
+			Zonegroup:  "realm-a",
 			Store:  "store-a",
 			Bucket: "bucket-a",
 			User:   "user-a",
 			Tenant: "tenant-a",
 		}}},
 		StaticUserSource{Users: []User{{
-			Realm:  "realm-a",
+			Zonegroup:  "realm-a",
 			Store:  "store-a",
 			User:   "user-a",
 			Tenant: "tenant-a",

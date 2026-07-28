@@ -17,7 +17,6 @@ type adminAPI interface {
 	GetUsers(ctx context.Context) (*[]string, error)
 	GetUser(ctx context.Context, user cephadmin.User) (cephadmin.User, error)
 	GetUserQuota(ctx context.Context, quota cephadmin.QuotaSpec) (cephadmin.QuotaSpec, error)
-	ListUsersBucketsWithStat(ctx context.Context, uid string) ([]cephadmin.Bucket, error)
 }
 
 type Client struct {

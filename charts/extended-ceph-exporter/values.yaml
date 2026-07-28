@@ -14,6 +14,8 @@ serviceAccount:
   annotations: {}
   name: ""
 
+podAnnotations: {}
+
 podSecurityContext:
   runAsNonRoot: true
 
@@ -25,7 +27,6 @@ securityContext:
   readOnlyRootFilesystem: true
 
 config:
-  listenAddress: ":9877"
   metricsPath: "/metrics"
   requestTimeout: "10s"
   rgwCacheTtl: "5s"
@@ -48,7 +49,6 @@ rgw:
 
 service:
   type: ClusterIP
-  port: 9877
   annotations: {}
   labels: {}
 

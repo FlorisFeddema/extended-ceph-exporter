@@ -14,7 +14,7 @@ ARG TARGETARCH
 
 RUN target_arch="${TARGETARCH:-$(go env GOARCH)}" && \
     CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${target_arch} \
-    go build -trimpath -ldflags="-s -w" \
+    go build -trimpath -ldflags="-s -w -X main.version=${VERSION}" \
     -o /out/extended-ceph-exporter ./cmd/extended-ceph-exporter
 
 FROM gcr.io/distroless/static-debian12:nonroot

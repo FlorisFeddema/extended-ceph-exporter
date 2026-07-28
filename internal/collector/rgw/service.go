@@ -4,6 +4,8 @@ import (
 	"context"
 	"sync"
 	"time"
+
+	"golang.org/x/sync/singleflight"
 )
 
 type Service struct {
@@ -17,6 +19,8 @@ type Service struct {
 	cached   Snapshot
 	expires  time.Time
 	hasCache bool
+
+	group singleflight.Group
 }
 
 func NewService(bucketSource BucketSource, userSource UserSource, cacheTTL time.Duration) *Service {
@@ -34,20 +38,35 @@ func NewServiceWithMetrics(bucketSource BucketSource, userSource UserSource, cac
 }
 
 func (s *Service) Snapshot(ctx context.Context) (Snapshot, error) {
+	// Fast path: serve from cache without blocking the fetch.
 	s.mu.Lock()
-	defer s.mu.Unlock()
-
-	now := s.now()
-	if s.hasCache && now.Before(s.expires) {
+	if s.hasCache && s.now().Before(s.expires) {
+		cached := s.cached
+		s.mu.Unlock()
 		if s.metrics != nil {
 			s.metrics.cacheHits.Inc()
 		}
-		return s.cached, nil
+		return cached, nil
 	}
+	s.mu.Unlock()
+
 	if s.metrics != nil {
 		s.metrics.cacheMisses.Inc()
 	}
-	refreshStart := now
+
+	// Slow path: deduplicate concurrent refreshes so only one upstream fetch
+	// runs at a time; other callers wait and share the result.
+	v, err, _ := s.group.Do("snapshot", func() (any, error) {
+		return s.refresh(ctx)
+	})
+	if err != nil {
+		return Snapshot{}, err
+	}
+	return v.(Snapshot), nil
+}
+
+func (s *Service) refresh(ctx context.Context) (Snapshot, error) {
+	refreshStart := s.now()
 
 	buckets, err := s.bucketSource.ListBuckets(ctx)
 	if err != nil {
@@ -55,23 +74,27 @@ func (s *Service) Snapshot(ctx context.Context) (Snapshot, error) {
 		return Snapshot{}, err
 	}
 
-	users, err := s.userSource.ListUsers(ctx)
+	users, err := s.userSource.ListUsers(ctx, buckets)
 	if err != nil {
 		s.observeRefreshFailure(refreshStart)
 		return Snapshot{}, err
 	}
 
 	refreshedAt := s.now()
-	s.cached = Snapshot{
+	snap := Snapshot{
 		Buckets:     buckets,
 		Users:       users,
 		CollectedAt: refreshedAt,
 	}
+
+	s.mu.Lock()
+	s.cached = snap
 	s.expires = refreshedAt.Add(s.cacheTTL)
 	s.hasCache = true
-	s.observeRefreshSuccess(refreshStart, refreshedAt)
+	s.mu.Unlock()
 
-	return s.cached, nil
+	s.observeRefreshSuccess(refreshStart, refreshedAt)
+	return snap, nil
 }
 
 func (s *Service) observeRefreshSuccess(start, end time.Time) {
@@ -105,6 +128,6 @@ type StaticUserSource struct {
 	Users []User
 }
 
-func (s StaticUserSource) ListUsers(_ context.Context) ([]User, error) {
+func (s StaticUserSource) ListUsers(_ context.Context, _ []Bucket) ([]User, error) {
 	return s.Users, nil
 }

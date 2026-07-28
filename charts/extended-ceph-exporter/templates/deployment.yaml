@@ -14,6 +14,10 @@ spec:
     metadata:
       labels:
         {{- include "extended-ceph-exporter.selectorLabels" . | nindent 8 }}
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
     spec:
       serviceAccountName: {{ include "extended-ceph-exporter.serviceAccountName" . }}
       {{- with .Values.imagePullSecrets }}
@@ -28,11 +32,11 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: {{ .Values.service.port }}
+              containerPort: 9877
               protocol: TCP
           env:
             - name: EXTENDED_CEPH_EXPORTER_LISTEN_ADDRESS
-              value: {{ .Values.config.listenAddress | quote }}
+              value: ":9877"
             - name: EXTENDED_CEPH_EXPORTER_METRICS_PATH
               value: {{ .Values.config.metricsPath | quote }}
             - name: EXTENDED_CEPH_EXPORTER_REQUEST_TIMEOUT
