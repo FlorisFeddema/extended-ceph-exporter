@@ -6,7 +6,7 @@ import (
 )
 
 type Bucket struct {
-	Realm             string
+	Zonegroup         string
 	Store             string
 	Bucket            string
 	User              string
@@ -19,7 +19,7 @@ type Bucket struct {
 }
 
 type User struct {
-	Realm             string
+	Zonegroup         string
 	Store             string
 	User              string
 	Tenant            string
@@ -38,7 +38,7 @@ type BucketSource interface {
 }
 
 type UserSource interface {
-	ListUsers(ctx context.Context) ([]User, error)
+	ListUsers(ctx context.Context, buckets []Bucket) ([]User, error)
 }
 
 type Snapshot struct {

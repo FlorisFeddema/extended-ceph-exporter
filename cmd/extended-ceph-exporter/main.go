@@ -18,6 +18,9 @@ import (
 	"github.com/FlorisFeddema/extended-ceph-exporter/internal/rgwclient"
 )
 
+// version is set at build time via -ldflags="-X main.version=<tag>".
+var version = "dev"
+
 func main() {
 	cfg := config.Parse()
 
@@ -33,7 +36,7 @@ func main() {
 		},
 		[]string{"version"},
 	)
-	buildInfo.WithLabelValues("dev").Set(1)
+	buildInfo.WithLabelValues(version).Set(1)
 	registry.MustRegister(buildInfo)
 
 	var rgwServiceMetrics *rgw.ServiceMetrics
@@ -70,6 +73,7 @@ func main() {
 		Addr:              cfg.ListenAddress,
 		Handler:           exporter.NewHandler(cfg, registry, logger),
 		ReadHeaderTimeout: 5 * time.Second,
+		WriteTimeout:      cfg.RequestTimeout + 10*time.Second,
 	}
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
@@ -84,6 +88,7 @@ func main() {
 			"rgw_cache_ttl", cfg.RGWCacheTTL.String(),
 			"rgw_admin_endpoint_configured", cfg.RGWAdminEndpoint != "",
 			"self_metrics_enabled", cfg.SelfMetricsEnabled,
+			"version", version,
 		)
 		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			errCh <- err

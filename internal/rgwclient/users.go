@@ -16,8 +16,15 @@ func NewUserSource(client *Client) UserSource {
 	return UserSource{client: client}
 }
 
-func (s UserSource) ListUsers(ctx context.Context) ([]rgw.User, error) {
+func (s UserSource) ListUsers(ctx context.Context, buckets []rgw.Bucket) ([]rgw.User, error) {
 	store := s.client.storeLabel(ctx)
+
+	// Build owner→zonegroup index from the already-fetched bucket list, avoiding
+	// a separate ListUsersBucketsWithStat API call per user.
+	ownerBuckets := make(map[string][]cephadmin.Bucket, len(buckets))
+	for _, b := range buckets {
+		ownerBuckets[b.User] = append(ownerBuckets[b.User], cephadmin.Bucket{Zonegroup: b.Zonegroup})
+	}
 
 	userIDs, err := s.client.admin.GetUsers(ctx)
 	if err != nil {
@@ -39,10 +46,6 @@ func (s UserSource) ListUsers(ctx context.Context) ([]rgw.User, error) {
 		}
 
 		quota, quotaErr := s.client.admin.GetUserQuota(ctx, cephadmin.QuotaSpec{UID: userID})
-		buckets, err := s.client.admin.ListUsersBucketsWithStat(ctx, userID)
-		if err != nil {
-			return nil, err
-		}
 
 		quotaEnabled := (*bool)(nil)
 		quotaMaxSizeBytes := (*float64)(nil)
@@ -53,14 +56,15 @@ func (s UserSource) ListUsers(ctx context.Context) ([]rgw.User, error) {
 			quotaMaxObjects = quotaObjectsLimit(quota.Enabled, quota.MaxObjects)
 		}
 
+		userBuckets := ownerBuckets[user.ID]
 		result = append(result, rgw.User{
-			Realm:             userRealm(buckets),
+			Zonegroup:         userZonegroup(userBuckets),
 			Store:             store,
 			User:              user.ID,
 			Tenant:            user.Tenant,
 			UsageBytes:        uint64PtrFloat(user.Stat.Size),
 			Objects:           uint64PtrFloat(user.Stat.NumObjects),
-			BucketCount:       float64(len(buckets)),
+			BucketCount:       float64(len(userBuckets)),
 			QuotaEnabled:      quotaEnabled,
 			QuotaMaxSizeBytes: quotaMaxSizeBytes,
 			QuotaMaxObjects:   quotaMaxObjects,
@@ -72,28 +76,28 @@ func (s UserSource) ListUsers(ctx context.Context) ([]rgw.User, error) {
 	return result, nil
 }
 
-func userRealm(buckets []cephadmin.Bucket) string {
-	realm := ""
+func userZonegroup(buckets []cephadmin.Bucket) string {
+	zonegroup := ""
 	for _, bucket := range buckets {
 		if bucket.Zonegroup == "" {
 			continue
 		}
 
-		if realm == "" {
-			realm = bucket.Zonegroup
+		if zonegroup == "" {
+			zonegroup = bucket.Zonegroup
 			continue
 		}
 
-		if realm != bucket.Zonegroup {
+		if zonegroup != bucket.Zonegroup {
 			return mixedLabelValue
 		}
 	}
 
-	if realm == "" {
+	if zonegroup == "" {
 		return unknownLabelValue
 	}
 
-	return realm
+	return zonegroup
 }
 
 func intPtrBool(value *int) bool {

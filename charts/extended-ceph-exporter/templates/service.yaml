@@ -17,6 +17,6 @@ spec:
     {{- include "extended-ceph-exporter.selectorLabels" . | nindent 4 }}
   ports:
     - name: http
-      port: {{ .Values.service.port }}
+      port: 9877
       targetPort: http
       protocol: TCP

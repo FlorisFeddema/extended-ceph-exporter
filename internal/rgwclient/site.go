@@ -23,13 +23,12 @@ func (c *Client) storeLabel(ctx context.Context) string {
 		return c.site.store
 	}
 
-	store := unknownLabelValue
 	info, err := c.admin.GetInfo(ctx)
-	if err == nil {
-		store = normalizeStore(info.InfoSpec.StorageBackends)
+	if err != nil {
+		return unknownLabelValue
 	}
 
-	c.site = &siteMetadata{store: store}
+	c.site = &siteMetadata{store: normalizeStore(info.InfoSpec.StorageBackends)}
 	return c.site.store
 }
 

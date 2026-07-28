@@ -42,13 +42,24 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          go test ./...
+          go test -race ./...
+
+      - name: Run go vet
+        shell: bash
+        run: |
+          set -euo pipefail
+          go vet ./...
 
       - name: Build Go binaries
         shell: bash
         run: |
           set -euo pipefail
           go build ./...
+
+      - name: Run golangci-lint
+        uses: golangci/golangci-lint-action@v8
+        with:
+          version: latest
 
   helm:
     runs-on: ubuntu-latest

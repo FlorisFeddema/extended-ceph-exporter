@@ -25,23 +25,23 @@ func TestNormalizeStore(t *testing.T) {
 	}
 }
 
-func TestZonegroupRealm(t *testing.T) {
-	if got := zonegroupRealm(""); got != unknownLabelValue {
+func TestZonegroupToLabel(t *testing.T) {
+	if got := toZonegroup(""); got != unknownLabelValue {
 		t.Fatalf("empty zonegroup = %q", got)
 	}
-	if got := zonegroupRealm("realm-a"); got != "realm-a" {
+	if got := toZonegroup("realm-a"); got != "realm-a" {
 		t.Fatalf("unexpected zonegroup mapping: %q", got)
 	}
 }
 
-func TestUserRealm(t *testing.T) {
-	if got := userRealm(nil); got != unknownLabelValue {
+func TestUserZonegroup(t *testing.T) {
+	if got := userZonegroup(nil); got != unknownLabelValue {
 		t.Fatalf("nil buckets = %q", got)
 	}
-	if got := userRealm([]cephadmin.Bucket{{Zonegroup: "a"}, {Zonegroup: "a"}}); got != "a" {
+	if got := userZonegroup([]cephadmin.Bucket{{Zonegroup: "a"}, {Zonegroup: "a"}}); got != "a" {
 		t.Fatalf("same zonegroup = %q", got)
 	}
-	if got := userRealm([]cephadmin.Bucket{{Zonegroup: "a"}, {Zonegroup: "b"}}); got != mixedLabelValue {
+	if got := userZonegroup([]cephadmin.Bucket{{Zonegroup: "a"}, {Zonegroup: "b"}}); got != mixedLabelValue {
 		t.Fatalf("mixed zonegroup = %q", got)
 	}
 }
@@ -50,8 +50,6 @@ func TestPointerConversions(t *testing.T) {
 	u64 := uint64(4)
 	i64 := int64(8)
 	i := 2
-	bTrue := true
-	bFalse := false
 
 	if uint64PtrFloat(nil) != 0 || uint64PtrFloat(&u64) != 4 {
 		t.Fatal("unexpected uint64PtrFloat")
@@ -65,34 +63,32 @@ func TestPointerConversions(t *testing.T) {
 	if intPtrBool(nil) || !intPtrBool(&i) {
 		t.Fatal("unexpected intPtrBool")
 	}
-	if boolPtrValue(nil) || !boolPtrValue(&bTrue) || boolPtrValue(&bFalse) {
+	if boolPtrValue(nil) || !boolPtrValue(new(true)) || boolPtrValue(new(false)) {
 		t.Fatal("unexpected boolPtrValue")
 	}
 }
 
 func TestQuotaLimitHelpers(t *testing.T) {
-	enabled := true
-	disabled := false
 	i64 := int64(10)
 	i := 2
 	objects := int64(9)
 
-	if got := quotaSizeLimit(&enabled, &i64, &i); got == nil || *got != 10 {
+	if got := quotaSizeLimit(new(true), &i64, &i); got == nil || *got != 10 {
 		t.Fatalf("preferred max size = %v", got)
 	}
-	if got := quotaSizeLimit(&enabled, nil, &i); got == nil || *got != 2048 {
+	if got := quotaSizeLimit(new(true), nil, &i); got == nil || *got != 2048 {
 		t.Fatalf("max size kb conversion = %v", got)
 	}
-	if got := quotaSizeLimit(&enabled, nil, nil); got != nil {
+	if got := quotaSizeLimit(new(true), nil, nil); got != nil {
 		t.Fatalf("nil quota size = %v", got)
 	}
-	if got := quotaSizeLimit(&disabled, &i64, &i); got != nil {
+	if got := quotaSizeLimit(new(false), &i64, &i); got != nil {
 		t.Fatalf("disabled quota size = %v", got)
 	}
-	if got := quotaObjectsLimit(&enabled, &objects); got == nil || *got != 9 {
+	if got := quotaObjectsLimit(new(true), &objects); got == nil || *got != 9 {
 		t.Fatalf("quota objects = %v", got)
 	}
-	if got := quotaObjectsLimit(&enabled, nil); got != nil {
+	if got := quotaObjectsLimit(new(true), nil); got != nil {
 		t.Fatalf("nil quota objects = %v", got)
 	}
 }

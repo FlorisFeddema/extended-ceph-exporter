@@ -6,24 +6,24 @@ import (
 	"testing"
 
 	cephadmin "github.com/ceph/go-ceph/rgw/admin"
+
+	"github.com/FlorisFeddema/extended-ceph-exporter/internal/collector/rgw"
 )
 
 type fakeAdmin struct {
-	info                    cephadmin.Info
-	infoErr                 error
-	infoCalls               int
-	buckets                 []cephadmin.Bucket
-	bucketsErr              error
-	bucketInfoByName        map[string]cephadmin.Bucket
-	bucketInfoErr           error
-	userIDs                 *[]string
-	userIDsErr              error
-	users                   map[string]cephadmin.User
-	userErr                 error
-	quotaByUID              map[string]cephadmin.QuotaSpec
-	quotaErr                error
-	userBucketsByUID        map[string][]cephadmin.Bucket
-	userBucketsWithStatsErr error
+	info             cephadmin.Info
+	infoErr          error
+	infoCalls        int
+	buckets          []cephadmin.Bucket
+	bucketsErr       error
+	bucketInfoByName map[string]cephadmin.Bucket
+	bucketInfoErr    error
+	userIDs          *[]string
+	userIDsErr       error
+	users            map[string]cephadmin.User
+	userErr          error
+	quotaByUID       map[string]cephadmin.QuotaSpec
+	quotaErr         error
 }
 
 func (f *fakeAdmin) GetInfo(context.Context) (cephadmin.Info, error) {
@@ -69,13 +69,6 @@ func (f *fakeAdmin) GetUserQuota(_ context.Context, quota cephadmin.QuotaSpec) (
 	return f.quotaByUID[quota.UID], nil
 }
 
-func (f *fakeAdmin) ListUsersBucketsWithStat(_ context.Context, uid string) ([]cephadmin.Bucket, error) {
-	if f.userBucketsWithStatsErr != nil {
-		return nil, f.userBucketsWithStatsErr
-	}
-	return f.userBucketsByUID[uid], nil
-}
-
 func TestStoreLabelCachesValue(t *testing.T) {
 	admin := &fakeAdmin{
 		info: cephadmin.Info{
@@ -97,8 +90,35 @@ func TestStoreLabelCachesValue(t *testing.T) {
 	}
 }
 
+func TestStoreLabelRetriesAfterFailure(t *testing.T) {
+	admin := &fakeAdmin{infoErr: errors.New("unavailable")}
+	client := &Client{admin: admin}
+
+	got := client.storeLabel(context.Background())
+	if got != unknownLabelValue {
+		t.Fatalf("expected %q on error, got %q", unknownLabelValue, got)
+	}
+	if admin.infoCalls != 1 {
+		t.Fatalf("expected one call, got %d", admin.infoCalls)
+	}
+
+	// Simulate recovery: clear the error and verify the next call retries.
+	admin.infoErr = nil
+	admin.info = cephadmin.Info{
+		InfoSpec: struct {
+			StorageBackends []cephadmin.StorageBackend `json:"storage_backends"`
+		}{StorageBackends: []cephadmin.StorageBackend{{Name: "beast"}}},
+	}
+	got = client.storeLabel(context.Background())
+	if got != "beast" {
+		t.Fatalf("expected store label after recovery, got %q", got)
+	}
+	if admin.infoCalls != 2 {
+		t.Fatalf("expected retry call, got %d total calls", admin.infoCalls)
+	}
+}
+
 func TestBucketSourceListBucketsMapsFields(t *testing.T) {
-	enabled := true
 	size := uint64(12)
 	objects := uint64(3)
 	maxSize := int64(100)
@@ -128,7 +148,7 @@ func TestBucketSourceListBucketsMapsFields(t *testing.T) {
 				Owner:     "user-a",
 				Tenant:    "tenant-a",
 				BucketQuota: cephadmin.QuotaSpec{
-					Enabled:    &enabled,
+					Enabled:    new(true),
 					MaxSize:    &maxSize,
 					MaxObjects: &maxObjects,
 				},
@@ -146,7 +166,7 @@ func TestBucketSourceListBucketsMapsFields(t *testing.T) {
 		t.Fatalf("unexpected bucket count: %d", len(buckets))
 	}
 	got := buckets[0]
-	if got.Realm != "realm-a" || got.Store != "beast" || got.UsageBytes != 12 || got.Objects != 3 || got.QuotaEnabled == nil || !*got.QuotaEnabled {
+	if got.Zonegroup != "realm-a" || got.Store != "beast" || got.UsageBytes != 12 || got.Objects != 3 || got.QuotaEnabled == nil || !*got.QuotaEnabled {
 		t.Fatalf("unexpected mapped bucket: %+v", got)
 	}
 	if got.QuotaMaxSizeBytes == nil || *got.QuotaMaxSizeBytes != 100 || got.QuotaMaxObjects == nil || *got.QuotaMaxObjects != 40 {
@@ -160,7 +180,6 @@ func TestUserSourceListUsersMapsFields(t *testing.T) {
 	maxBuckets := 7
 	size := uint64(11)
 	objects := uint64(5)
-	enabled := true
 	maxSizeKB := 2
 	maxObjects := int64(90)
 
@@ -182,21 +201,19 @@ func TestUserSourceListUsersMapsFields(t *testing.T) {
 		},
 		quotaByUID: map[string]cephadmin.QuotaSpec{
 			"user-a": {
-				Enabled:    &enabled,
+				Enabled:    new(true),
 				MaxSizeKb:  &maxSizeKB,
 				MaxObjects: &maxObjects,
-			},
-		},
-		userBucketsByUID: map[string][]cephadmin.Bucket{
-			"user-a": {
-				{Zonegroup: "realm-a"},
-				{Zonegroup: "realm-a"},
 			},
 		},
 	}
 
 	source := NewUserSource(&Client{admin: admin})
-	users, err := source.ListUsers(context.Background())
+	inputBuckets := []rgw.Bucket{
+		{User: "user-a", Zonegroup: "realm-a"},
+		{User: "user-a", Zonegroup: "realm-a"},
+	}
+	users, err := source.ListUsers(context.Background(), inputBuckets)
 	if err != nil {
 		t.Fatalf("ListUsers failed: %v", err)
 	}
@@ -205,7 +222,7 @@ func TestUserSourceListUsersMapsFields(t *testing.T) {
 		t.Fatalf("unexpected user count: %d", len(users))
 	}
 	got := users[0]
-	if got.Realm != "realm-a" || got.Store != "beast" || got.BucketCount != 2 || !got.Suspended {
+	if got.Zonegroup != "realm-a" || got.Store != "beast" || got.BucketCount != 2 || !got.Suspended {
 		t.Fatalf("unexpected mapped user: %+v", got)
 	}
 	if got.QuotaEnabled == nil || !*got.QuotaEnabled {
@@ -224,14 +241,13 @@ func TestUserSourcePropagatesErrors(t *testing.T) {
 		userErr: errors.New("boom"),
 	}})
 
-	_, err := source.ListUsers(context.Background())
+	_, err := source.ListUsers(context.Background(), nil)
 	if err == nil {
 		t.Fatal("expected error")
 	}
 }
 
 func TestBucketSourceOmitsUnlimitedQuotaValues(t *testing.T) {
-	enabled := true
 	admin := &fakeAdmin{
 		info: cephadmin.Info{
 			InfoSpec: struct {
@@ -247,7 +263,7 @@ func TestBucketSourceOmitsUnlimitedQuotaValues(t *testing.T) {
 			"bucket-a": {
 				Bucket: "bucket-a",
 				BucketQuota: cephadmin.QuotaSpec{
-					Enabled: &enabled,
+					Enabled: new(true),
 				},
 			},
 		},
@@ -294,7 +310,7 @@ func TestBucketSourceOmitsQuotaOnBucketInfoErrors(t *testing.T) {
 	if len(buckets) != 1 {
 		t.Fatalf("unexpected bucket count: %d", len(buckets))
 	}
-	if buckets[0].UsageBytes != 12 || buckets[0].Objects != 3 || buckets[0].Realm != "realm-a" || buckets[0].User != "user-a" || buckets[0].Tenant != "tenant-a" {
+	if buckets[0].UsageBytes != 12 || buckets[0].Objects != 3 || buckets[0].Zonegroup != "realm-a" || buckets[0].User != "user-a" || buckets[0].Tenant != "tenant-a" {
 		t.Fatalf("expected bucket usage and identity to survive quota failure, got %+v", buckets[0])
 	}
 	if buckets[0].QuotaEnabled != nil || buckets[0].QuotaMaxSizeBytes != nil || buckets[0].QuotaMaxObjects != nil {
@@ -304,7 +320,6 @@ func TestBucketSourceOmitsQuotaOnBucketInfoErrors(t *testing.T) {
 
 func TestUserSourceOmitsUnlimitedQuotaValues(t *testing.T) {
 	userIDs := []string{"user-a"}
-	enabled := true
 	admin := &fakeAdmin{
 		info: cephadmin.Info{
 			InfoSpec: struct {
@@ -316,14 +331,11 @@ func TestUserSourceOmitsUnlimitedQuotaValues(t *testing.T) {
 			"user-a": {ID: "user-a"},
 		},
 		quotaByUID: map[string]cephadmin.QuotaSpec{
-			"user-a": {Enabled: &enabled},
-		},
-		userBucketsByUID: map[string][]cephadmin.Bucket{
-			"user-a": nil,
+			"user-a": {Enabled: new(true)},
 		},
 	}
 
-	users, err := NewUserSource(&Client{admin: admin}).ListUsers(context.Background())
+	users, err := NewUserSource(&Client{admin: admin}).ListUsers(context.Background(), nil)
 	if err != nil {
 		t.Fatalf("ListUsers failed: %v", err)
 	}
@@ -354,20 +366,18 @@ func TestUserSourceOmitsQuotaOnQuotaErrors(t *testing.T) {
 			},
 		},
 		quotaErr: errors.New("boom"),
-		userBucketsByUID: map[string][]cephadmin.Bucket{
-			"user-a": {
-				{Zonegroup: "realm-a"},
-				{Zonegroup: "realm-a"},
-			},
-		},
 	}
 
-	users, err := NewUserSource(&Client{admin: admin}).ListUsers(context.Background())
+	inputBuckets := []rgw.Bucket{
+		{User: "user-a", Zonegroup: "realm-a"},
+		{User: "user-a", Zonegroup: "realm-a"},
+	}
+	users, err := NewUserSource(&Client{admin: admin}).ListUsers(context.Background(), inputBuckets)
 	if err != nil {
 		t.Fatalf("ListUsers failed: %v", err)
 	}
 
-	if users[0].UsageBytes != 11 || users[0].Objects != 5 || users[0].BucketCount != 2 || users[0].Realm != "realm-a" {
+	if users[0].UsageBytes != 11 || users[0].Objects != 5 || users[0].BucketCount != 2 || users[0].Zonegroup != "realm-a" {
 		t.Fatalf("expected user usage and bucket count to survive quota failure, got %+v", users[0])
 	}
 	if users[0].QuotaEnabled != nil || users[0].QuotaMaxSizeBytes != nil || users[0].QuotaMaxObjects != nil {

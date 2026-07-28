@@ -79,6 +79,8 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.prep.outputs.image_tags }}
+          build-args: |
+            VERSION=${{ steps.prep.outputs.release_version }}
 
       - name: Set up Helm
         uses: azure/setup-helm@v4

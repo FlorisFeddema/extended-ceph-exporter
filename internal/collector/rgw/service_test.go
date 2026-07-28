@@ -31,7 +31,7 @@ type countingUserSource struct {
 	calls int
 }
 
-func (s *countingUserSource) ListUsers(context.Context) ([]User, error) {
+func (s *countingUserSource) ListUsers(context.Context, []Bucket) ([]User, error) {
 	s.calls++
 	if s.err != nil {
 		return nil, s.err

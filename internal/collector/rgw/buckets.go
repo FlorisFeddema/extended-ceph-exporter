@@ -7,7 +7,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 )
 
-var bucketLabels = []string{"realm", "store", "bucket", "user", "tenant"}
+var bucketLabels = []string{"bucket", "store", "tenant", "user", "zonegroup"}
 
 type BucketsCollector struct {
 	service        *Service
@@ -53,7 +53,7 @@ func (c *BucketsCollector) Collect(ch chan<- prometheus.Metric) {
 	}
 
 	for _, bucket := range snapshot.Buckets {
-		values := []string{bucket.Realm, bucket.Store, bucket.Bucket, bucket.User, bucket.Tenant}
+		values := []string{bucket.Bucket, bucket.Store, bucket.Tenant, bucket.User, bucket.Zonegroup}
 		ch <- prometheus.MustNewConstMetric(c.infoDesc, prometheus.GaugeValue, 1, values...)
 		ch <- prometheus.MustNewConstMetric(c.usageBytesDesc, prometheus.GaugeValue, bucket.UsageBytes, values...)
 		ch <- prometheus.MustNewConstMetric(c.objectsDesc, prometheus.GaugeValue, bucket.Objects, values...)
