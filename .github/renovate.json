@@ -1,0 +1,10 @@
+{
+  "extends": [
+    "github>florisfeddema/renovate-config:default.json"
+  ],
+  "dependencyDashboard": true,
+  "prConcurrentLimit": 0,
+  "helm-values": {
+    "enabled": true
+  }
+}
