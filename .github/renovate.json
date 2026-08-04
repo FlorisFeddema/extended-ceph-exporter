@@ -4,47 +4,7 @@
   ],
   "dependencyDashboard": true,
   "prConcurrentLimit": 0,
-  "separateMinorPatch": true,
-  "separateMajorMinor": true,
-  "separateMultipleMajor": true,
-  "commitMessagePrefix": "[{{parentDir}}]",
-  "additionalBranchPrefix": "{{parentDir}}-",
-  "argocd": {
-    "managerFilePatterns": [
-      "/\\.yaml$/"
-    ]
-  },
   "helm-values": {
     "enabled": true
-  },
-  "packageRules": [
-    {
-      "matchUpdateTypes": [
-        "patch"
-      ],
-      "automerge": true
-    },
-    {
-      "description": "Only allow stable Ceph versions (x.2.y) - ignore development (x.0.y) and release candidate (x.1.y) versions",
-      "matchDatasources": [
-        "docker"
-      ],
-      "matchPackageNames": [
-        "quay.io/ceph/ceph"
-      ],
-      "allowedVersions": "/^v\\d+\\.2\\.\\d+$/"
-    }
-  ],
-  "customManagers": [
-    {
-      "customType": "regex",
-      "managerFilePatterns": [
-        "/^values\\.yaml$/"
-      ],
-      "matchStrings": [
-        "name:\\s*(?<depName>ghcr\\.io/zapier/kubechecks)\\s*tag:\\s*(?<currentValue>v?[\\d\\.]+)"
-      ],
-      "datasourceTemplate": "docker"
-    }
-  ]
+  }
 }
