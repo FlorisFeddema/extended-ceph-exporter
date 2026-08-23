@@ -9,9 +9,7 @@ metadata:
 spec:
   store: {{ required "rook.objectStoreUser.store is required when rook.objectStoreUser.enabled=true" .Values.rook.objectStoreUser.store | quote }}
   clusterNamespace: {{ .Values.rook.clusterNamespace | quote }}
-  {{- with .Values.rook.objectStoreUser.displayName }}
-  displayName: {{ . | quote }}
-  {{- end }}
+  displayName: {{ include "extended-ceph-exporter.objectStoreUserDisplayName" . | quote }}
   {{- with .Values.rook.objectStoreUser.capabilities }}
   capabilities:
     {{- toYaml . | nindent 4 }}

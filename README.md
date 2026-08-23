@@ -109,7 +109,9 @@ helm upgrade --install extended-ceph-exporter charts/extended-ceph-exporter \
   --set serviceMonitor.enabled=true
 ```
 
-Optionally create a Rook `CephObjectStoreUser` resource:
+Optionally create a Rook `CephObjectStoreUser` resource. The chart defaults the
+user name and display name to the release fullname, then automatically references
+Rook's generated `rook-ceph-object-user-<store>-<user>` credential Secret:
 
 ```bash
 helm upgrade --install extended-ceph-exporter charts/extended-ceph-exporter \
@@ -120,7 +122,10 @@ helm upgrade --install extended-ceph-exporter charts/extended-ceph-exporter \
 
 The chart supports both an optional `ServiceMonitor` and an optional `CephObjectStoreUser` resource. The exporter configuration is injected through environment variables so access keys and secret keys can be sourced from Kubernetes `Secret` objects without passing them as container arguments.
 
-When the object-store user secret is managed or copied under another name in the exporter namespace, override the reference with `rook.objectStoreUser.secretName`:
+Override the generated user identity with `rook.objectStoreUser.name` or
+`rook.objectStoreUser.displayName`. When the object-store user Secret is managed
+or copied under another name in the exporter namespace, override the reference
+with `rook.objectStoreUser.secretName`:
 
 ```bash
 helm upgrade --install extended-ceph-exporter charts/extended-ceph-exporter \
