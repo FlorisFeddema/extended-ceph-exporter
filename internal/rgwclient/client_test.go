@@ -134,10 +134,7 @@ func TestBucketSourceListBucketsMapsFields(t *testing.T) {
 			Zonegroup: "realm-a",
 			Owner:     "user-a",
 			Tenant:    "tenant-a",
-			Usage: struct {
-				RgwMain      cephadmin.RgwUsage `json:"rgw.main"`
-				RgwMultimeta cephadmin.RgwUsage `json:"rgw.multimeta"`
-			}{
+			Usage: cephadmin.BucketUsage{
 				RgwMain: cephadmin.RgwUsage{Size: &size, NumObjects: &objects},
 			},
 		}},
@@ -293,10 +290,7 @@ func TestBucketSourceOmitsQuotaOnBucketInfoErrors(t *testing.T) {
 			Zonegroup: "realm-a",
 			Owner:     "user-a",
 			Tenant:    "tenant-a",
-			Usage: struct {
-				RgwMain      cephadmin.RgwUsage `json:"rgw.main"`
-				RgwMultimeta cephadmin.RgwUsage `json:"rgw.multimeta"`
-			}{
+			Usage: cephadmin.BucketUsage{
 				RgwMain: cephadmin.RgwUsage{Size: &size, NumObjects: &objects},
 			},
 		}},
