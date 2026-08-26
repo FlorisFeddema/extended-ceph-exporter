@@ -8,7 +8,7 @@ metadata:
     {{- include "extended-ceph-exporter.labels" . | nindent 4 }}
 spec:
   store: {{ required "rook.objectStoreUser.store is required when rook.objectStoreUser.enabled=true" .Values.rook.objectStoreUser.store | quote }}
-  clusterNamespace: {{ .Values.rook.clusterNamespace | quote }}
+  clusterNamespace: {{ default .Release.Namespace .Values.rook.clusterNamespace | quote }}
   displayName: {{ include "extended-ceph-exporter.objectStoreUserDisplayName" . | quote }}
   {{- with .Values.rook.objectStoreUser.capabilities }}
   capabilities:
