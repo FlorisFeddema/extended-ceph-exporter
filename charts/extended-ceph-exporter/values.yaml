@@ -70,7 +70,8 @@ grafanaDashboard:
   annotations: {}
 
 rook:
-  clusterNamespace: rook-ceph
+  # Defaults to the Helm release namespace.
+  clusterNamespace: ""
   objectStoreUser:
     enabled: false
     # Defaults to the chart fullname.
