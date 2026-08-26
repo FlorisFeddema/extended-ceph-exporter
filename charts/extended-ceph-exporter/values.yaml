@@ -73,10 +73,14 @@ rook:
   clusterNamespace: rook-ceph
   objectStoreUser:
     enabled: false
+    # Defaults to the chart fullname.
     name: ""
     namespace: ""
     store: ""
+    # Defaults to the resolved object-store user name.
     displayName: ""
+    # Defaults to Rook's generated Secret name:
+    # rook-ceph-object-user-<store>-<resolved user name>.
     secretName: ""
     # Read-only RGW Admin Ops capabilities required by the exporter.
     capabilities:

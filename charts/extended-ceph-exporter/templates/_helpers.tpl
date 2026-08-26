@@ -58,6 +58,10 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- default (include "extended-ceph-exporter.fullname" .) .Values.rook.objectStoreUser.name -}}
 {{- end -}}
 
+{{- define "extended-ceph-exporter.objectStoreUserDisplayName" -}}
+{{- default (include "extended-ceph-exporter.objectStoreUserName" .) .Values.rook.objectStoreUser.displayName -}}
+{{- end -}}
+
 {{- define "extended-ceph-exporter.objectStoreUserNamespace" -}}
 {{- default .Release.Namespace .Values.rook.objectStoreUser.namespace -}}
 {{- end -}}
